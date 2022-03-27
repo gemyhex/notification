@@ -6,17 +6,22 @@ const state = {
 const getters = {}
 const actions = {
   async LogIn({}, User) {
-    await axios.post('/login', {
-      email: User.email,
-      password: User.password,
-    }).then((res) => {
-      if (res.data.response.token) {
-        localStorage.setItem('token', res.data.response.token)
-        window.location.replace('/dashboard')
-      }
-    }).catch((error) => {
-      alert(error)
-    })
+    if (User.email !== '' || User.password !== '') {
+      await axios.post('/login', {
+        email: User.email,
+        password: User.password,
+      }).then((res) => {
+        if (res.data.response.token) {
+          localStorage.setItem('token', res.data.response.token)
+          window.location.replace('/dashboard')
+        }
+      }).catch((error) => {
+        alert("Invalid Credentials !")
+      })
+    }
+    else {
+      alert("Email and password required !")
+    }
   },
   async LogOut({}) {
     await axios
@@ -26,7 +31,7 @@ const actions = {
         window.location.replace('/login')
       })
       .catch((error) => {
-        alert(error)
+        alert("Something Went Wrong !")
       })
   },
 }

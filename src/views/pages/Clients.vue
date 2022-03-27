@@ -67,6 +67,7 @@
           :items="clients"
           item-key="id"
           class="elevation-1"
+          :mobile-breakpoint="0"
           :footer-props="{
             showFirstLastPage: true,
             firstIcon: icons.mdiArrowLeft,
@@ -87,6 +88,8 @@ import axios from 'axios'
 export default {
   data() {
     return {
+      perPage: 10,
+      currentPage: 1,
       icons: {
         mdiArrowLeft,
         mdiArrowRight,
@@ -120,6 +123,11 @@ export default {
       .catch(error => {
         console.log(error)
       })
+  },
+  computed: {
+    rows() {
+      return this.clients.length
+    },
   },
   methods: {
     async onSend() {

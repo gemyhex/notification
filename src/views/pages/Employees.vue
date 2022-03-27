@@ -53,6 +53,7 @@
           :items="employees"
           item-key="id"
           class="elevation-1"
+          :mobile-breakpoint="0"
           :footer-props="{
             showFirstLastPage: true,
             firstIcon: icons.mdiArrowLeft,

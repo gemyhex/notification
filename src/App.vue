@@ -38,4 +38,10 @@ label#lbl_inp {
   font-size: 1rem !important;
   line-height: 1rem !important;
 }
+body {
+  overflow: hidden;
+}
+table tbody tr td {
+  min-width: 200px;
+}
 </style>
