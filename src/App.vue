@@ -33,7 +33,7 @@ export default {
   },
 }
 </script>
-<style>
+<style lang="scss">
 label#lbl_inp {
   font-size: 1rem !important;
   line-height: 1rem !important;
@@ -43,5 +43,48 @@ body {
 }
 table tbody tr td {
   min-width: 200px;
+}
+ul {
+  list-style: none;
+}
+/* Scrollbar */
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #000000;
+  border: 2px solid #555555;
+}
+.liquid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  svg {
+    stroke-width: 1;
+    stroke: white;
+    path {
+      stroke-dasharray: 700;
+      stroke-dashoffset: 700;
+      animation: animate-fill 1.5s linear forwards infinite;
+    }
+  }
+}
+@keyframes animate-fill {
+  50% {
+    stroke-dashoffset: 1400;
+    fill: transparent;
+  }
+  100% {
+    stroke-width: 0;
+    stroke-dashoffset: 1400;
+    fill: aqua;
+  }
 }
 </style>

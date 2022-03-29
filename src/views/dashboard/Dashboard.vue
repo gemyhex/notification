@@ -133,6 +133,12 @@ export default {
     DashboardWeeklyOverview,
     DashboardDatatable,
   },
+  beforeMount() {
+    if (!localStorage.getItem('token')) {
+      localStorage.clear()
+      this.$router.push('/login')
+    }
+  },
   setup() {
     const totalProfit = {
       statTitle: 'Total Profit',

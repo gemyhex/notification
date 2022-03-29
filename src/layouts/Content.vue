@@ -2,11 +2,19 @@
   <v-app>
     <vertical-nav-menu :is-drawer-open.sync="isDrawerOpen"></vertical-nav-menu>
 
-    <v-app-bar app flat absolute color="transparent">
+    <v-app-bar
+      app
+      flat
+      absolute
+      color="transparent"
+    >
       <div class="boxed-container w-full">
         <div class="d-flex align-center mx-6">
           <!-- Left Content -->
-          <v-app-bar-nav-icon class="d-block d-lg-none me-2" @click="isDrawerOpen = !isDrawerOpen"></v-app-bar-nav-icon>
+          <v-app-bar-nav-icon
+            class="d-block d-lg-none me-2"
+            @click="isDrawerOpen = !isDrawerOpen"
+          ></v-app-bar-nav-icon>
           <v-text-field
             rounded
             dense
@@ -21,7 +29,11 @@
           <!-- Right Content -->
 
           <theme-switcher></theme-switcher>
-          <v-btn icon small class="ms-3">
+          <v-btn
+            icon
+            small
+            class="ms-3"
+          >
             <v-icon>
               {{ icons.mdiBellOutline }}
             </v-icon>

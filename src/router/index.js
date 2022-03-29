@@ -17,50 +17,130 @@ const routes = [{
         next()
       } else {
         next({
-          name: 'login'
+          name: 'login',
         })
       }
-    }
+    },
   },
   {
     path: '/users',
     name: 'users',
     component: () => import('@/views/pages/Users.vue'),
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token') || ''
+      if (token !== '') {
+        next()
+      } else {
+        next({
+          name: 'login',
+        })
+      }
+    },
   },
   {
     path: '/clients',
     name: 'clients',
     component: () => import('@/views/pages/Clients.vue'),
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token') || ''
+      if (token !== '') {
+        next()
+      } else {
+        next({
+          name: 'login',
+        })
+      }
+    },
   },
   {
     path: '/doc-groups',
     name: 'doc-groups',
     component: () => import('@/views/pages/DocumentGroups.vue'),
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token') || ''
+      if (token !== '') {
+        next()
+      } else {
+        next({
+          name: 'login',
+        })
+      }
+    },
   },
   {
     path: '/companies',
     name: 'companies',
     component: () => import('@/views/pages/Companies.vue'),
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token') || ''
+      if (token !== '') {
+        next()
+      } else {
+        next({
+          name: 'login',
+        })
+      }
+    },
   },
   {
     path: '/company_types',
     name: 'company_types',
     component: () => import('@/views/pages/CompanyTypes.vue'),
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token') || ''
+      if (token !== '') {
+        next()
+      } else {
+        next({
+          name: 'login',
+        })
+      }
+    },
   },
   {
     path: '/employees',
     name: 'employees',
     component: () => import('@/views/pages/Employees.vue'),
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token') || ''
+      if (token !== '') {
+        next()
+      } else {
+        next({
+          name: 'login',
+        })
+      }
+    },
   },
   {
     path: '/documents',
     name: 'documents',
     component: () => import('@/views/pages/Documents.vue'),
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token') || ''
+      if (token !== '') {
+        next()
+      } else {
+        next({
+          name: 'login',
+        })
+      }
+    },
   },
   {
     path: '/employeedocuments',
     name: 'employeedocuments',
     component: () => import('@/views/pages/EmployeeDocuments.vue'),
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token') || ''
+      if (token !== '') {
+        next()
+      } else {
+        next({
+          name: 'login',
+        })
+      }
+    },
   },
   {
     path: '/typography',
@@ -102,7 +182,7 @@ const routes = [{
         next()
       } else {
         next({
-          name: 'dashboard'
+          name: 'dashboard',
         })
       }
     },

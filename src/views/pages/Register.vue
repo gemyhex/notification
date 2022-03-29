@@ -4,7 +4,10 @@
       <v-card class="auth-card">
         <!-- logo -->
         <v-card-title class="d-flex align-center justify-center py-7">
-          <router-link to="/" class="d-flex align-center">
+          <router-link
+            to="/"
+            class="d-flex align-center"
+          >
             <v-img
               :src="require('@/assets/images/logos/logo.svg')"
               max-height="30px"
@@ -14,14 +17,20 @@
               class="me-3"
             ></v-img>
 
-            <h2 class="text-2xl font-weight-semibold">Materio</h2>
+            <h2 class="text-2xl font-weight-semibold">
+              Materio
+            </h2>
           </router-link>
         </v-card-title>
 
         <!-- title -->
         <v-card-text>
-          <p class="text-2xl font-weight-semibold text--primary mb-2">Adventure starts here 🚀</p>
-          <p class="mb-2">Make your app management easy and fun!</p>
+          <p class="text-2xl font-weight-semibold text--primary mb-2">
+            Adventure starts here 🚀
+          </p>
+          <p class="mb-2">
+            Make your app management easy and fun!
+          </p>
         </v-card-text>
 
         <!-- login form -->
@@ -56,7 +65,10 @@
               @click:append="isPasswordVisible = !isPasswordVisible"
             ></v-text-field>
 
-            <v-checkbox hide-details class="mt-1">
+            <v-checkbox
+              hide-details
+              class="mt-1"
+            >
               <template #label>
                 <div class="d-flex align-center flex-wrap">
                   <span class="me-2">I agree to</span><a href="javascript:void(0)">privacy policy &amp; terms</a>
@@ -64,14 +76,44 @@
               </template>
             </v-checkbox>
 
-            <v-btn block type="submit" color="primary" class="mt-6"> Sign Up </v-btn>
+            <v-btn
+              v-if="!isLoading"
+              type="submit"
+              block
+              color="primary"
+              class="mt-6"
+            >
+              Signup
+            </v-btn>
+            <v-btn
+              v-else
+              type="submit"
+              block
+              color="primary"
+              class="mt-6"
+            >
+              <button
+                class="btn"
+                type="button"
+                disabled
+              >
+                <span
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Please Wait...
+              </button>
+            </v-btn>
           </v-form>
         </v-card-text>
 
         <!-- create new account  -->
         <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">
           <span class="me-2"> Already have an account? </span>
-          <router-link :to="{ name: 'login' }"> Sign in instead </router-link>
+          <router-link :to="{ name: 'login' }">
+            Sign in instead
+          </router-link>
         </v-card-text>
       </v-card>
     </div>
@@ -84,10 +126,20 @@
     />
 
     <!-- tree -->
-    <v-img class="auth-tree" width="247" height="185" src="@/assets/images/misc/tree.png"></v-img>
+    <v-img
+      class="auth-tree"
+      width="247"
+      height="185"
+      src="@/assets/images/misc/tree.png"
+    ></v-img>
 
     <!-- tree  -->
-    <v-img class="auth-tree-3" width="377" height="289" src="@/assets/images/misc/tree-3.png"></v-img>
+    <v-img
+      class="auth-tree-3"
+      width="377"
+      height="289"
+      src="@/assets/images/misc/tree-3.png"
+    ></v-img>
   </div>
 </template>
 
@@ -99,7 +151,7 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      url: 'http://localhost/notification/public/api',
+      isLoading: false,
       isPasswordVisible: false,
       user: {
         email: null,
@@ -149,6 +201,7 @@ export default {
           console.log(err)
         })
     },
+
     // ...mapActions(['Register']),
     // async onSignUp() {
     //   try {
