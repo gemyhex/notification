@@ -47,15 +47,17 @@ table tbody tr td {
 ul {
   list-style: none;
 }
+
 /* Scrollbar */
 ::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: #f5f5f5;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar {
   width: 3px;
-  background-color: #f5f5f5;
+  height: 3px;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -76,6 +78,7 @@ ul {
     }
   }
 }
+
 @keyframes animate-fill {
   50% {
     stroke-dashoffset: 1400;

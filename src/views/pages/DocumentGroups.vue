@@ -2,70 +2,37 @@
   <div class="container">
     <v-row justify="space-around">
       <v-col>
-        <v-dialog
-          v-model="dialog"
-          transition="dialog-top-transition"
-          max-width="600"
-        >
+        <v-dialog v-model="dialog" transition="dialog-top-transition" max-width="600">
           <v-card>
-            <v-toolbar
-              color="primary"
-              dark
-            >
-              Add Document Group
-            </v-toolbar>
+            <v-toolbar color="primary" dark> Add Document Group</v-toolbar>
             <v-card-text class="mt-5">
               <v-form @submit.prevent="onSend">
                 <v-row>
-                  <v-col
-                    cols="12"
-                    md="6"
-                  >
+                  <v-col cols="12" md="6">
+                    <label id="lbl_inp" for="group">Group Name <span class="text-danger">*</span></label>
                     <v-text-field
                       id="groupName"
-                      v-model="doc.name"
+                      v-model="$v.doc.name.$model"
                       outlined
                       dense
                       placeholder="Group Name"
                       hide-details
+                      :class="{ 'is-invalid': validateStatus($v.doc.name), 'mt-3': true }"
                     ></v-text-field>
+                    <div v-if="!$v.doc.name.required" class="invalid-feedback">The name field is required.</div>
                   </v-col>
                 </v-row>
               </v-form>
             </v-card-text>
             <v-card-actions class="justify-end">
-              <v-btn
-                v-if="!isLoading"
-                color="primary"
-                type="submit"
-                @click="onSend"
-              >
-                Save
-              </v-btn>
-              <v-btn
-                v-else
-                type="submit"
-                color="primary"
-              >
-                <button
-                  class="btn"
-                  type="button"
-                  disabled
-                >
-                  <span
-                    class="spinner-border spinner-border-sm"
-                    role="status"
-                    aria-hidden="true"
-                  ></span>
+              <v-btn v-if="!isLoading" color="primary" type="submit" @click="onSend"> Save </v-btn>
+              <v-btn v-else type="submit" color="primary">
+                <button class="btn" type="button" disabled>
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                   Saving...
                 </button>
               </v-btn>
-              <v-btn
-                color="danger"
-                @click="dialog = false"
-              >
-                Close
-              </v-btn>
+              <v-btn color="danger" @click="dialog = false"> Close </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -74,13 +41,7 @@
     <div v-if="docs">
       <v-row>
         <v-col>
-          <v-btn
-            color="primary"
-            dark
-            @click.stop="dialog = true"
-          >
-            Add Document Group
-          </v-btn>
+          <v-btn color="primary" dark @click.stop="dialog = true"> Add Document Group </v-btn>
         </v-col>
       </v-row>
       <v-row>
@@ -103,6 +64,12 @@
       </v-row>
     </div>
     <v-row v-else>
+      <div class="alert alert-warning" role="alert" v-if="isError">
+        <div class="alert-cont">
+          <v-icon class="icon" @click="isError = !isError">{{ icons.mdiClose }}</v-icon>
+          <p>If the data didn't load yet , please sign out and try again !</p>
+        </div>
+      </div>
       <v-col class="liquid">
         <svg
           id="logoLoading"
@@ -123,22 +90,13 @@
             <g>
               <g>
                 <g>
-                  <path
-                    class="st0"
-                    d="M104,166.5c-0.1-11.1,17.5-11.1,17.4,0C121.7,178,103.7,178,104,166.5z"
-                  />
+                  <path class="st0" d="M104,166.5c-0.1-11.1,17.5-11.1,17.4,0C121.7,178,103.7,178,104,166.5z" />
                 </g>
                 <g>
-                  <path
-                    class="st1"
-                    d="M82.2,166.6c-0.1-11.1,17.4-11.2,17.4-0.1C99.9,178,81.9,178.1,82.2,166.6z"
-                  />
+                  <path class="st1" d="M82.2,166.6c-0.1-11.1,17.4-11.2,17.4-0.1C99.9,178,81.9,178.1,82.2,166.6z" />
                 </g>
                 <g>
-                  <path
-                    class="st0"
-                    d="M78.3,166.7c0.1,11.4-17.8,11.3-17.4-0.1C60.8,155.3,78.4,155.4,78.3,166.7z"
-                  />
+                  <path class="st0" d="M78.3,166.7c0.1,11.4-17.8,11.3-17.4-0.1C60.8,155.3,78.4,155.4,78.3,166.7z" />
                 </g>
               </g>
               <g>
@@ -312,29 +270,16 @@
 
     <v-row justify="space-around">
       <v-col>
-        <v-dialog
-          v-model="errorDialog"
-          max-width="350"
-        >
+        <v-dialog v-model="errorDialog" max-width="350">
           <v-card>
-            <v-card-title class="text-h5">
-              Oops !
-            </v-card-title>
+            <v-card-title class="text-h5"> Oops ! </v-card-title>
 
             <v-card-text>
               <ul>
-                <li
-                  v-for="(err, i) in errors"
-                  v-if="errors.length > 1"
-                  :key="i"
-                  class="py-3"
-                >
+                <li v-for="(err, i) in errors" v-if="errors.length > 1" :key="i" class="py-3">
                   {{ err[0] }}
                 </li>
-                <li
-                  v-if="errors.length == 1"
-                  class="py-3"
-                >
+                <li v-if="errors.length == 1" class="py-3">
                   {{ errors[0] }}
                 </li>
               </ul>
@@ -342,13 +287,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn
-                color="green darken-1"
-                text
-                @click="errorDialog = false"
-              >
-                Close
-              </v-btn>
+              <v-btn color="green darken-1" text @click="errorDialog = false"> Close </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -358,10 +297,9 @@
 </template>
 
 <script>
-import {
-  mdiArrowLeft, mdiArrowRight, mdiChevronLeft, mdiChevronRight,
-} from '@mdi/js'
+import { mdiArrowLeft, mdiArrowRight, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
 import axios from 'axios'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   data() {
@@ -371,11 +309,13 @@ export default {
       errors: ['Something Went Wrong !'],
       errorDialog: false,
       successDialog: false,
+      isError: false,
       icons: {
         mdiArrowLeft,
         mdiArrowRight,
         mdiChevronLeft,
         mdiChevronRight,
+        mdiClose,
       },
       doc: {
         name: null,
@@ -392,13 +332,22 @@ export default {
     }
   },
   mounted() {
-    axios.get('/documents-groups').then(res => {
-      this.docs = res.data.response
-    })
+    axios
+      .get('/documents-groups')
+      .then(res => {
+        this.docs = res.data.response
+      })
+      .catch(error => {
+        this.isError = true
+      })
   },
   methods: {
+    validateStatus(validation) {
+      return typeof validation != 'undefined' ? validation.$error : false
+    },
     async onSend() {
-      if (this.doc.name !== null) {
+      this.$v.$touch()
+      if (!this.$v.$invalid) {
         this.isLoading = true
         await axios
           .post('/documents-groups/store', this.doc)
@@ -415,10 +364,12 @@ export default {
             this.error = error.response
             this.isLoading = false
           })
-      } else {
-        this.errors[0] = 'Fields Required !'
-        this.errorDialog = true
       }
+    },
+  },
+  validations: {
+    doc: {
+      name: { required },
     },
   },
 }

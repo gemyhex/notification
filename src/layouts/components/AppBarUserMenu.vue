@@ -1,5 +1,5 @@
 <template>
-  <v-menu
+  <!-- <v-menu
     offset-y
     left
     nudge-bottom="14"
@@ -51,7 +51,6 @@
 
       <v-divider></v-divider>
 
-      <!-- Profile -->
       <v-list-item link>
         <v-list-item-icon class="me-2">
           <v-icon size="22">
@@ -63,7 +62,6 @@
         </v-list-item-content>
       </v-list-item>
 
-      <!-- Email -->
       <v-list-item link>
         <v-list-item-icon class="me-2">
           <v-icon size="22">
@@ -75,7 +73,6 @@
         </v-list-item-content>
       </v-list-item>
 
-      <!-- Chat -->
       <v-list-item link>
         <v-list-item-icon class="me-2">
           <v-icon size="22">
@@ -98,7 +95,6 @@
 
       <v-divider class="my-2"></v-divider>
 
-      <!-- Settings -->
       <v-list-item link>
         <v-list-item-icon class="me-2">
           <v-icon size="22">
@@ -110,7 +106,6 @@
         </v-list-item-content>
       </v-list-item>
 
-      <!-- Pricing -->
       <v-list-item link>
         <v-list-item-icon class="me-2">
           <v-icon size="22">
@@ -122,7 +117,6 @@
         </v-list-item-content>
       </v-list-item>
 
-      <!-- FAQ -->
       <v-list-item link>
         <v-list-item-icon class="me-2">
           <v-icon size="22">
@@ -136,7 +130,6 @@
 
       <v-divider class="my-2"></v-divider>
 
-      <!-- Logout -->
       <v-list-item link>
         <v-list-item-icon class="me-2">
           <v-icon size="22">
@@ -150,7 +143,12 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-  </v-menu>
+  </v-menu> -->
+  <div>
+    <v-icon @click="logout" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Logout" class="mx-3">{{
+      icons.mdiLogoutVariant
+    }}</v-icon>
+  </div>
 </template>
 
 <script>

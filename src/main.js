@@ -13,6 +13,7 @@ import App from './App.vue'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vuelidate from 'vuelidate'
 
 axios.defaults.baseURL = 'https://notif-back.smarttechno.co/api/'
 axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`
@@ -20,6 +21,8 @@ axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('to
 Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
+Vue.use(Vuelidate)
+
 new Vue({
   router,
   store,

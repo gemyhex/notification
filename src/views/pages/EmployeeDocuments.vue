@@ -9,41 +9,61 @@
               <v-form @submit.prevent="onSend">
                 <v-row>
                   <v-col cols="12" md="6">
-                    <label id="lbl_inp" for="employee">Employee</label>
-                    <select id="employee" v-model="document.employee_id" class="form-select">
+                    <label id="lbl_inp" for="employee">Employee <span class="text-danger">*</span></label>
+                    <select
+                      id="employee"
+                      v-model="$v.document.employee_id.$model"
+                      :class="{ 'is-invalid': validateStatus($v.document.employee_id), 'form-select mt-3': true }"
+                    >
                       <option disabled selected>Select Employee</option>
                       <option v-for="emp in employees" :key="emp.id" :value="emp.id">
                         {{ emp.name }}
                       </option>
                     </select>
+                    <div v-if="!$v.document.employee_id.required" class="invalid-feedback">
+                      The employee field is required.
+                    </div>
                   </v-col>
                   <v-col cols="12" md="6">
-                    <label id="lbl_inp" for="document">Document</label>
-                    <select id="document" v-model="document.document_id" class="form-select">
+                    <label id="lbl_inp" for="document">Document <span class="text-danger">*</span></label>
+                    <select
+                      id="document"
+                      v-model="$v.document.document_id.$model"
+                      :class="{ 'is-invalid': validateStatus($v.document.document_id), 'form-select mt-3': true }"
+                    >
                       <option disabled selected>Select Document</option>
                       <option v-for="doc in documents" :key="doc.id" :value="doc.id">
                         {{ doc.name }}
                       </option>
                     </select>
+                    <div v-if="!$v.document.document_id.required" class="invalid-feedback">
+                      The document field is required.
+                    </div>
                   </v-col>
                   <v-col cols="12" md="6">
-                    <label id="lbl_inp" for="document_name">Type</label>
-                    <select id="type" v-model="document.type" class="form-select">
+                    <label id="lbl_inp" for="document_name">Type <span class="text-danger">*</span></label>
+                    <select
+                      id="type"
+                      v-model="$v.document.type.$model"
+                      :class="{ 'is-invalid': validateStatus($v.document.type), 'form-select mt-3': true }"
+                    >
                       <option disabled selected>Select Type</option>
                       <option value="year">Yearly</option>
                       <option value="month">Monthly</option>
                       <option value="quarter">Quarterly</option>
                     </select>
+                    <div v-if="!$v.document.type.required" class="invalid-feedback">The type field is required.</div>
                   </v-col>
                   <v-col cols="12" md="6">
-                    <label id="lbl_inp" for="document_name">Date</label>
-                    <!-- <v-date-picker
-                          v-model="document.due_date"
-                          :allowed-dates="allowedDates"
-                          min="2016-01-01"
-                          max="2100-01-01"
-                        ></v-date-picker> -->
-                    <input v-model="document.due_date" type="date" class="form-select" />
+                    <label id="lbl_inp" for="date">Date <span class="text-danger">*</span></label>
+                    <input
+                      v-model="$v.document.due_date.$model"
+                      type="date"
+                      :class="{ 'is-invalid': validateStatus($v.document.due_date), 'form-select mt-3': true }"
+                    />
+                    <div v-if="!$v.document.due_date.required" class="invalid-feedback">
+                      The due date field is required.
+                    </div>
                   </v-col>
                 </v-row>
               </v-form>
@@ -88,6 +108,12 @@
       </v-row>
     </div>
     <v-row v-else>
+      <div class="alert alert-warning" role="alert" v-if="isError">
+        <div class="alert-cont">
+          <v-icon class="icon" @click="isError = !isError">{{ icons.mdiClose }}</v-icon>
+          <p>If the data didn't load yet , please sign out and try again !</p>
+        </div>
+      </div>
       <v-col class="liquid">
         <svg
           id="logoLoading"
@@ -313,8 +339,9 @@
 </template>
 
 <script>
-import { mdiArrowLeft, mdiArrowRight, mdiChevronLeft, mdiChevronRight } from '@mdi/js'
+import { mdiArrowLeft, mdiArrowRight, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
 import axios from 'axios'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   data() {
@@ -324,11 +351,13 @@ export default {
       errorDialog: false,
       successDialog: false,
       dialog: false,
+      isError: false,
       icons: {
         mdiArrowLeft,
         mdiArrowRight,
         mdiChevronLeft,
         mdiChevronRight,
+        mdiClose,
       },
       document: {
         employee_id: null,
@@ -353,9 +382,14 @@ export default {
     }
   },
   mounted() {
-    axios.get('/employees/get/notifications').then(res => {
-      this.docs = res.data.response
-    })
+    axios
+      .get('/employees/get/notifications')
+      .then(res => {
+        this.docs = res.data.response
+      })
+      .catch(error => {
+        this.isError = true
+      })
     axios.get('/employees').then(res => {
       this.employees = res.data.response
     })
@@ -364,13 +398,12 @@ export default {
     })
   },
   methods: {
+    validateStatus(validation) {
+      return typeof validation != 'undefined' ? validation.$error : false
+    },
     async onSend() {
-      if (
-        this.document.employee_id !== null ||
-        this.document.document_id !== null ||
-        this.document.type !== null ||
-        this.document.due_date !== null
-      ) {
+      this.$v.$touch()
+      if (!this.$v.$invalid) {
         this.isLoading = true
         await axios
           .post(`/employees/assign-documents/${this.document.employee_id}`, this.document)
@@ -387,10 +420,15 @@ export default {
             this.error = error.response
             this.isLoading = false
           })
-      } else {
-        this.errors[0] = 'Fields Required !'
-        this.errorDialog = true
       }
+    },
+  },
+  validations: {
+    document: {
+      employee_id: { required },
+      document_id: { required },
+      type: { required },
+      due_date: { required },
     },
   },
 }

@@ -1,0 +1,26 @@
+.alert {
+    width: 200px !important;
+    max-width: 200px !important;
+    position: fixed !important;
+    top: 10%;
+    right: 3%;
+    z-index: 9999;
+
+    .alert-cont {
+        position: relative;
+
+        .icon {
+            width: 15px;
+            height: 20px;
+            position: absolute;
+            top: -15px;
+            right: -10px;
+            cursor: pointer;
+            color: #000;
+        }
+
+        p {
+            margin: 0;
+        }
+    }
+}
