@@ -1,69 +1,85 @@
 <template>
   <div class="container">
-    <v-row justify="space-around">
-      <v-col>
-        <v-dialog v-model="dialog" transition="dialog-top-transition" max-width="600">
-          <v-card>
-            <v-toolbar color="primary" dark> Add Company Types </v-toolbar>
-            <v-card-text class="mt-5">
-              <v-form @submit.prevent="onSend">
-                <v-row>
-                  <v-col cols="12" md="6">
-                    <label id="lbl_inp" for="group">Company Type <span class="text-danger">*</span></label>
-                    <v-text-field
-                      id="company_type"
-                      v-model="$v.company.type.$model"
-                      outlined
-                      dense
-                      placeholder="Comapny Type"
-                      hide-details
-                      :class="{ 'is-invalid': validateStatus($v.company.type), 'mt-3': true }"
-                    ></v-text-field>
-                    <div v-if="!$v.company.type.required" class="invalid-feedback">
-                      The company type field is required.
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-form>
-            </v-card-text>
-            <v-card-actions class="justify-end">
-              <v-btn v-if="!isLoading" color="primary" type="submit" @click="onSend"> Save </v-btn>
-              <v-btn v-else type="submit" color="primary">
-                <button class="btn" type="button" disabled>
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  Saving...
-                </button>
-              </v-btn>
-              <v-btn color="danger" @click="dialog = false"> Close </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-col>
-    </v-row>
     <div v-if="types">
-      <v-row>
-        <v-col>
-          <v-btn color="primary" dark @click.stop="dialog = true"> Add Company Type </v-btn>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-data-table
-            :headers="headers"
-            :items="types"
-            item-key="id"
-            class="elevation-1"
-            :mobile-breakpoint="0"
-            :footer-props="{
-              showFirstLastPage: true,
-              firstIcon: icons.mdiArrowLeft,
-              lastIcon: icons.mdiArrowRight,
-              prevIcon: icons.mdiChevronLeft,
-              nextIcon: icons.mdiChevronRight,
-            }"
-          ></v-data-table>
-        </v-col>
-      </v-row>
+      <v-data-table :headers="headers" :items="types" sort-by="id" class="elevation-1">
+        <template v-slot:top>
+          <v-toolbar flat>
+            <v-toolbar-title>Types</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-dialog v-model="dialog" max-width="500px">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on"> New Type </v-btn>
+              </template>
+              <v-card>
+                <v-card-title>
+                  <span class="text-h5">{{ formTitle }}</span>
+                </v-card-title>
+
+                <v-card-text>
+                  <v-container>
+                    <v-form @submit.prevent="onSend">
+                      <v-row>
+                        <v-col cols="12" md="6">
+                          <label id="lbl_inp" for="group">Company Type <span class="text-danger">*</span></label>
+                          <v-text-field
+                            id="company_type"
+                            v-model="$v.company.type.$model"
+                            outlined
+                            dense
+                            placeholder="Comapny Type"
+                            hide-details
+                            :class="{ 'is-invalid': validateStatus($v.company.type), 'mt-3': true }"
+                          ></v-text-field>
+                          <div v-if="!$v.company.type.required" class="invalid-feedback">
+                            The company type field is required.
+                          </div>
+                        </v-col>
+                      </v-row>
+                    </v-form>
+                  </v-container>
+                </v-card-text>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
+                  <v-btn color="blue darken-1" type="submit" text @click.stop="save" v-if="!isLoading"> Save </v-btn>
+                  <v-btn v-else type="submit" color="blue darken-1">
+                    <button type="button" disabled>
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      Saving...
+                    </button>
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-dialog v-model="dialogDelete" max-width="500px">
+              <v-card>
+                <v-card-title class="text-h6">Are you sure you want to delete this item?</v-card-title>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
+                  <v-btn color="blue darken-1" text @click="deleteItemConfirm($event)" v-if="!isDeleteing">OK</v-btn>
+                  <v-btn v-else type="submit" color="blue darken-1">
+                    <button type="button" disabled>
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      Deleteing...
+                    </button>
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-toolbar>
+        </template>
+        <template v-slot:item.id="{ item }">
+          {{ types.indexOf(item) + 1 }}
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-icon small class="mr-2" @click="editItem(item)"> {{ icons.mdiPencil }} </v-icon>
+          <v-icon small @click="deleteItem(item, $event)"> {{ icons.mdiDelete }} </v-icon>
+        </template>
+      </v-data-table>
     </div>
     <v-row v-else>
       <div class="alert alert-warning" role="alert" v-if="isError">
@@ -274,14 +290,19 @@
       <v-col>
         <v-dialog v-model="errorDialog" max-width="350">
           <v-card>
-            <v-card-title class="text-h5"> Oops ! </v-card-title>
+            <v-card-title class="text-h5">
+              <v-icon size="40">
+                {{ icons.mdiAlertCircleOutline }}
+              </v-icon>
+              Oops !
+            </v-card-title>
 
             <v-card-text>
               <ul>
-                <li v-for="(err, i) in errors" v-if="errors.length > 1" :key="i" class="py-3">
+                <li v-for="(err, i) in errors" v-if="errors.length > 1" :key="i" class="py-3 text-center">
                   {{ err[0] }}
                 </li>
-                <li v-if="errors.length == 1" class="py-3">
+                <li v-if="errors.length == 1" class="py-3 text-center">
                   {{ errors[0] }}
                 </li>
               </ul>
@@ -289,7 +310,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="green darken-1" text @click="errorDialog = false"> Close </v-btn>
+              <v-btn color="error lighten-1" text @click="errorDialog = false"> Close </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -299,7 +320,7 @@
 </template>
 
 <script>
-import { mdiArrowLeft, mdiArrowRight, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
+import { mdiArrowLeft, mdiArrowRight, mdiChevronLeft, mdiChevronRight, mdiClose, mdiPencil, mdiDelete } from '@mdi/js'
 import axios from 'axios'
 import { required } from 'vuelidate/lib/validators'
 
@@ -308,20 +329,29 @@ export default {
     return {
       isLoading: false,
       dialog: false,
+      perPage: 5,
+      currentPage: 1,
       errors: ['Something Went Wrong !'],
       errorDialog: false,
       successDialog: false,
       isError: false,
+      editedIndex: -1,
+      deletedIndex: -1,
+      dialogDelete: false,
+      isDeleteing: false,
       icons: {
         mdiArrowLeft,
         mdiArrowRight,
         mdiChevronLeft,
         mdiChevronRight,
-        mdiClose
+        mdiClose,
+        mdiPencil,
+        mdiDelete,
       },
       company: {
         type: null,
       },
+      types: null,
       headers: [
         {
           text: 'ID',
@@ -329,9 +359,29 @@ export default {
           value: 'id',
         },
         { text: 'Type', value: 'type' },
+        { text: 'Actions', value: 'actions', sortable: false },
       ],
       types: null,
     }
+  },
+  computed: {
+    rows() {
+      return this.clients.length
+    },
+    Types() {
+      return this.types
+    },
+    formTitle() {
+      return this.editedIndex === -1 ? 'New Type' : 'Edit Type'
+    },
+  },
+  watch: {
+    dialog(val) {
+      val || this.close()
+    },
+    dialogDelete(val) {
+      val || this.closeDelete()
+    },
   },
   mounted() {
     axios
@@ -339,11 +389,66 @@ export default {
       .then(res => {
         this.types = res.data.response
       })
-      .catch(() => {
+      .catch(error => {
         this.isError = true
       })
   },
   methods: {
+    editItem(item) {
+      this.editedIndex = item.id
+      this.arrIndex = this.types.indexOf(item)
+      this.company.type = this.types[this.arrIndex].type
+      this.dialog = true
+    },
+
+    deleteItem(item) {
+      this.editedIndex = item.id
+      this.arrIndex = this.types.indexOf(item)
+      this.dialogDelete = true
+    },
+
+    async deleteItemConfirm() {
+      this.isDeleteing = true
+      await axios
+        .delete(`/company-types/${this.editedIndex}`)
+        .then(res => {
+          this.types.splice(this.arrIndex, 1)
+          this.isDeleteing = false
+        })
+        .catch(error => {
+          console.log(error)
+          this.isDeleteing = false
+        })
+      this.closeDelete()
+    },
+
+    close() {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+
+    closeDelete() {
+      this.dialogDelete = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+
+    save() {
+      if (this.editedIndex > -1) {
+        // Object.assign(this.desserts[this.editedIndex], this.editedItem)
+        // console.log('edit client')
+        this.onUpdate()
+      } else {
+        // this.desserts.push(this.editedItem)
+        // console.log('send new client')
+        this.onSend()
+      }
+    },
     validateStatus(validation) {
       return typeof validation != 'undefined' ? validation.$error : false
     },
@@ -359,11 +464,33 @@ export default {
               this.errorDialog = true
               this.isLoading = false
             } else {
-              location.reload()
+              this.types.push(res.data.response)
+              this.close()
+              this.isLoading = false
             }
           })
           .catch(error => {
             this.error = error.response
+            this.isLoading = false
+          })
+      }
+    },
+    async onUpdate() {
+      this.$v.$touch()
+      if (!this.$v.$invalid) {
+        this.isLoading = true
+        await axios
+          .patch(`/company-types/update/${this.editedIndex}`, {
+            type: this.company.type,
+          })
+          .then(() => {
+            this.types[this.arrIndex].type = this.company.type
+            this.isLoading = false
+            this.close()
+          })
+          .catch(error => {
+            console.log(error)
+            this.isError = true
             this.isLoading = false
           })
       }

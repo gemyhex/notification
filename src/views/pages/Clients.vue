@@ -1,74 +1,5 @@
 <template>
   <div class="container">
-    <!-- <v-row justify="space-around">
-      <v-col>
-        <v-dialog v-model="dialog" transition="dialog-top-transition" max-width="600">
-          <v-card>
-            <v-toolbar color="primary" dark> Add Client </v-toolbar>
-            <v-card-text class="mt-5">
-              <v-form @submit.prevent="onSend">
-                <v-row>
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      id="Fullname"
-                      v-model.trim="$v.client.name.$model"
-                      outlined
-                      dense
-                      placeholder="Fullname"
-                      hide-details
-                      aria-required="true"
-                      :class="{ 'is-invalid': validateStatus($v.client.name) }"
-                    ></v-text-field>
-                    <div v-if="!$v.client.name.required" class="invalid-feedback">The fullname field is required.</div>
-                  </v-col>
-
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      id="phone"
-                      v-model.trim="$v.client.phone.$model"
-                      outlined
-                      type="number"
-                      dense
-                      placeholder="Phone"
-                      hide-details
-                      aria-required="true"
-                      :class="{ 'is-invalid': validateStatus($v.client.phone) }"
-                    ></v-text-field>
-                    <div v-if="!$v.client.phone.required" class="invalid-feedback">The phone field is required.</div>
-                  </v-col>
-
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      id="address"
-                      v-model.trim="$v.client.address.$model"
-                      type="text"
-                      outlined
-                      dense
-                      placeholder="Address"
-                      hide-details
-                      :class="{ 'is-invalid': validateStatus($v.client.address) }"
-                    ></v-text-field>
-                    <div v-if="!$v.client.address.required" class="invalid-feedback">
-                      The address field is required.
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-form>
-            </v-card-text>
-            <v-card-actions class="justify-end">
-              <v-btn v-if="!isLoading" color="primary" type="submit" @click="onSend"> Save </v-btn>
-              <v-btn v-else type="submit" color="primary">
-                <button class="btn" type="button" disabled>
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  Saving...
-                </button>
-              </v-btn>
-              <v-btn color="danger" @click="dialog = false"> Close </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-col>
-    </v-row> -->
     <div v-if="clients.length">
       <v-data-table :headers="headers" :items="clients" sort-by="id" class="elevation-1">
         <template v-slot:top>
@@ -448,6 +379,7 @@ export default {
       successDialog: false,
       isError: false,
       editedIndex: -1,
+      deletedIndex: -1,
       dialogDelete: false,
       isDeleteing: false,
       icons: {
@@ -498,7 +430,7 @@ export default {
       val || this.closeDelete()
     },
   },
-  created() {
+  mounted() {
     axios
       .get('/clients')
       .then(res => {
@@ -511,13 +443,14 @@ export default {
   methods: {
     editItem(item) {
       this.editedIndex = item.id
+      this.arrIndex = this.clients.indexOf(item)
+      this.client = this.clients[this.arrIndex]
       this.dialog = true
     },
 
-    deleteItem(item, ev) {
+    deleteItem(item) {
       this.editedIndex = item.id
-      // this.selected = ev.target.parentElement
-      console.log(ev.target.parentElement.parentElement.parentElement.children[0].innerText)
+      this.arrIndex = this.clients.indexOf(item)
       this.dialogDelete = true
     },
 
@@ -526,7 +459,7 @@ export default {
       await axios
         .delete(`/clients/${this.editedIndex}`)
         .then(res => {
-          // this.clients.slice(this.editedIndex, 1)
+          this.clients.splice(this.arrIndex, 1)
           this.isDeleteing = false
         })
         .catch(error => {
@@ -556,6 +489,7 @@ export default {
       if (this.editedIndex > -1) {
         // Object.assign(this.desserts[this.editedIndex], this.editedItem)
         // console.log('edit client')
+        this.onUpdate()
       } else {
         // this.desserts.push(this.editedItem)
         // console.log('send new client')
@@ -584,6 +518,27 @@ export default {
           })
           .catch(error => {
             this.error = error.response
+            this.isLoading = false
+          })
+      }
+    },
+    async onUpdate() {
+      this.$v.$touch()
+      if (!this.$v.$invalid) {
+        this.isLoading = true
+        await axios
+          .patch(`/clients/update/${this.editedIndex}`, {
+            name: this.client.name,
+            phone: this.client.phone,
+            address: this.client.address,
+          })
+          .then(() => {
+            this.client = this.clients[this.arrIndex]
+            this.isLoading = false
+            this.close()
+          })
+          .catch(error => {
+            this.isError = true
             this.isLoading = false
           })
       }
