@@ -1,116 +1,84 @@
 <template>
-  <div class="container">
-    <v-row justify="space-around">
-      <v-col>
-        <v-dialog
-          transition="dialog-top-transition"
-          max-width="600"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              v-bind="attrs"
-              v-on="on"
-            >
-              Add User
-            </v-btn>
-          </template>
-          <template v-slot:default="dialog">
-            <v-card>
-              <v-toolbar
-                color="primary"
-                dark
-              >
-                Add User
-              </v-toolbar>
-              <v-card-text>
-                <div class="text-h2 pa-12">
-                  <v-form>
-                    <v-row>
-                      <v-col
-                        cols="12"
-                        md="6"
-                      >
-                        <v-text-field
-                          id="username"
-                          v-model="user.username"
-                          outlined
-                          dense
-                          placeholder="Username"
-                          hide-details
-                        ></v-text-field>
-                      </v-col>
+  <div>
+    <div v-if="roles">
+      <v-data-table
+        :headers="headers"
+        :items="roles"
+        :options.sync="options"
+        :server-items-length="total"
+        :loading="loading"
+        class="elevation-1"
+      >
+        <template v-slot:top>
+          <v-toolbar flat>
+            <v-toolbar-title>Roles</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-dialog v-model="dialog" max-width="500px">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on"> New Role </v-btn>
+              </template>
+              <v-card>
+                <v-card-title>
+                  <span class="text-h5">{{ formTitle }}</span>
+                </v-card-title>
 
-                      <v-col
-                        cols="12"
-                        md="6"
-                      >
-                        <v-text-field
-                          id="email"
-                          v-model="user.email"
-                          outlined
-                          dense
-                          placeholder="Email"
-                          hide-details
-                        ></v-text-field>
-                      </v-col>
+                <v-card-text>
+                  <v-container>
+                    <v-form @submit.prevent ref="form">
+                      <v-row>
+                        <v-col cols="12" md="6">
+                          <v-text-field
+                            id="name"
+                            v-model.trim="$v.role.name.$model"
+                            outlined
+                            dense
+                            placeholder="name"
+                            hide-details
+                            aria-required="true"
+                            :class="{ 'is-invalid': validateStatus($v.role.name) }"
+                          ></v-text-field>
+                          <div v-if="!$v.role.name.required" class="invalid-feedback">The name field is required.</div>
+                        </v-col>
+                      </v-row>
+                    </v-form>
+                  </v-container>
+                </v-card-text>
 
-                      <v-col
-                        cols="12"
-                        md="6"
-                      >
-                        <v-text-field
-                          id="password"
-                          v-model="user.password"
-                          type="password"
-                          outlined
-                          dense
-                          placeholder="Password"
-                          hide-details
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-form>
-                </div>
-              </v-card-text>
-              <v-card-actions class="justify-end">
-                <v-btn
-                  color="primary"
-                  type="submit"
-                >
-                  Save
-                </v-btn>
-                <v-btn
-                  color="danger"
-                  @click="dialog.value = false"
-                >
-                  Close
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </template>
-        </v-dialog>
-      </v-col>
-    </v-row>
-    <v-row v-if="users">
-      <v-col>
-        <v-data-table
-          :headers="headers"
-          :items="users"
-          item-key="id"
-          class="elevation-1"
-          :mobile-breakpoint="0"
-          :footer-props="{
-            showFirstLastPage: true,
-            firstIcon: icons.mdiArrowLeft,
-            lastIcon: icons.mdiArrowRight,
-            prevIcon: icons.mdiMinus,
-            nextIcon: icons.mdiPlus,
-          }"
-        ></v-data-table>
-      </v-col>
-    </v-row>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="error" @click="closeAdd"> Cancel </v-btn>
+                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading"> Save </v-btn>
+                  <v-btn v-else type="submit" color="success">
+                    <button type="button" disabled>
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      Saving...
+                    </button>
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-toolbar>
+        </template>
+        <template v-slot:item.id="{ item }">
+          <v-chip small color="primary">
+            {{ roles.indexOf(item) + 1 }}
+          </v-chip>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-chip small color="success" class="mr-2" @click="selectedItem(item)">
+            <v-icon small> {{ icons.mdiPlusBox }} </v-icon>
+          </v-chip>
+        </template>
+      </v-data-table>
+    </div>
     <v-row v-else>
+      <div class="alert alert-warning" role="alert" v-if="isError">
+        <div class="alert-cont">
+          <v-icon class="icon" @click="isError = !isError">{{ icons.mdiClose }}</v-icon>
+          <p>If the data didn't load yet , please sign out and try again !</p>
+        </div>
+      </div>
       <v-col class="liquid">
         <svg
           id="logoLoading"
@@ -131,22 +99,13 @@
             <g>
               <g>
                 <g>
-                  <path
-                    class="st0"
-                    d="M104,166.5c-0.1-11.1,17.5-11.1,17.4,0C121.7,178,103.7,178,104,166.5z"
-                  />
+                  <path class="st0" d="M104,166.5c-0.1-11.1,17.5-11.1,17.4,0C121.7,178,103.7,178,104,166.5z" />
                 </g>
                 <g>
-                  <path
-                    class="st1"
-                    d="M82.2,166.6c-0.1-11.1,17.4-11.2,17.4-0.1C99.9,178,81.9,178.1,82.2,166.6z"
-                  />
+                  <path class="st1" d="M82.2,166.6c-0.1-11.1,17.4-11.2,17.4-0.1C99.9,178,81.9,178.1,82.2,166.6z" />
                 </g>
                 <g>
-                  <path
-                    class="st0"
-                    d="M78.3,166.7c0.1,11.4-17.8,11.3-17.4-0.1C60.8,155.3,78.4,155.4,78.3,166.7z"
-                  />
+                  <path class="st0" d="M78.3,166.7c0.1,11.4-17.8,11.3-17.4-0.1C60.8,155.3,78.4,155.4,78.3,166.7z" />
                 </g>
               </g>
               <g>
@@ -317,63 +276,283 @@
         </svg>
       </v-col>
     </v-row>
+
+    <v-row justify="space-around">
+      <v-col>
+        <v-dialog v-model="errorDialog" max-width="350">
+          <v-card>
+            <v-card-title class="text-h4">
+              <v-icon size="50">
+                {{ icons.mdiAlertCircleOutline }}
+              </v-icon>
+              <span>Oops !</span>
+            </v-card-title>
+            <v-spacer></v-spacer>
+            <v-card-text>
+              <ul>
+                <li v-for="(err, i, idx) in errorsLog" :key="i" class="py-1 my-3 text-center d-flex text-center">
+                  <v-chip color="error" small>{{ idx + 1 }}</v-chip>
+                  <p class="m-0 px-3">{{ err[0] }}</p>
+                </li>
+              </ul>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="error lighten-1" text @click="errorDialog = false"> Close </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col>
+        <v-dialog v-model="permissionDialog" max-width="500px">
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">Assign Permissions</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container>
+                <v-form @submit.prevent ref="form">
+                  <v-row>
+                    <!-- <v-col>
+                      <select id="client" multiple v-model="permissions.permissions" class="form-select mt-3">
+                        <option disabled selected>Select Permission</option>
+                        <option v-for="permission in permissionsList" :key="permission.id" :value="permission.name">
+                          {{ permission.name }}
+                        </option>
+                      </select>
+                    </v-col> -->
+                    <label for="name">Role Name <span class="text-danger">*</span></label>
+                    <v-col>
+                      <v-select
+                        v-model="permissions.permissions"
+                        :items="permissionsListNames"
+                        :menu-props="{ maxHeight: '400' }"
+                        label="Select Permissions"
+                        multiple
+                        hint="Pick your permissions"
+                        persistent-hint
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="error" @click="close"> Cancel </v-btn>
+              <v-btn color="success" type="submit" @click.stop="onSendPermission" v-if="!isLoading"> Save </v-btn>
+              <v-btn v-else type="submit" color="success">
+                <button type="button" disabled>
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  Saving...
+                </button>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-col>
+    </v-row>
   </div>
 </template>
-
 <script>
 import {
-  mdiArrowLeft, mdiArrowRight, mdiMinus, mdiPlus,
+  mdiArrowLeft,
+  mdiArrowRight,
+  mdiChevronLeft,
+  mdiChevronRight,
+  mdiAlertCircleOutline,
+  mdiClose,
+  mdiPencil,
+  mdiDelete,
+  mdiPlusBox,
 } from '@mdi/js'
+import axios from 'axios'
+import { required } from 'vuelidate/lib/validators'
 
 export default {
   data() {
     return {
+      isLoading: false,
+      dialog: false,
+      errorsLog: { err: ['Something Went Wrong !'] },
+      errorDialog: false,
+      permissionDialog: false,
+      isError: false,
+      editedIndex: -1,
+      deletedIndex: -1,
+      dialogDelete: false,
+      isDeleteing: false,
       icons: {
         mdiArrowLeft,
         mdiArrowRight,
-        mdiMinus,
-        mdiPlus,
+        mdiChevronLeft,
+        mdiChevronRight,
+        mdiAlertCircleOutline,
+        mdiClose,
+        mdiPencil,
+        mdiDelete,
+        mdiPlusBox,
       },
-      user: {
-        username: null,
-        email: null,
-        password: null,
+      role: {
+        name: null,
       },
+      total: 0,
+      roles: [],
+      permissions: {
+        permissions: [],
+      },
+      permissionsList: [],
+      permissionsListNames: [],
+      loading: true,
+      options: {},
       headers: [
         {
-          text: 'ID',
+          text: 'Id',
           align: 'start',
+          sortable: false,
           value: 'id',
         },
         { text: 'Name', value: 'name' },
-      ],
-      users: [
-        {
-          id: '1',
-          name: 'Frozen Yogurt',
-        },
-        {
-          id: '2',
-          name: 'Ice cream sandwich',
-        },
-        {
-          id: '3',
-          name: 'Eclair',
-        },
-        {
-          id: '4',
-          name: 'Cupcake',
-        },
-        {
-          id: '5',
-          name: 'Gingerbread',
-        },
-        {
-          id: '6',
-          name: 'Jelly bean',
-        },
+        { text: 'Permissions', value: 'actions' },
       ],
     }
+  },
+  watch: {
+    options: {
+      handler() {
+        this.getDataFromApi()
+      },
+      deep: true,
+    },
+    dialog(val) {
+      val || this.close()
+    },
+  },
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? 'New Role' : 'Edit Role'
+    },
+  },
+  mounted() {
+    axios
+      .get('/roles/permissions')
+      .then(res => {
+        this.permissionsList = res.data.response.data
+        res.data.response.data.forEach(prn => {
+          this.permissionsListNames.push(prn.name)
+        })
+      })
+      .catch(error => {
+        if (error.response.data.errors) {
+          this.errorsLog = error.response.data.errors
+        } else {
+          this.errorsLog = { err: ['Permissions can not load now !'] }
+        }
+        this.errorDialog = true
+      })
+  },
+  methods: {
+    getDataFromApi() {
+      this.loading = true
+      let self = this
+      const { page, itemsPerPage } = this.options
+      axios
+        .get('/roles', { params: { page: page, per_page: itemsPerPage } })
+        .then(res => {
+          self.roles = res.data.response.data
+          self.total = res.data.response.meta.total
+          self.loading = false
+        })
+        .catch(error => {
+          if (error.response.data.errors) {
+            this.errorsLog = error.response.data.errors
+          } else {
+            this.errorsLog = { err: ['Roles can not load now !'] }
+          }
+          this.isError = true
+          this.errorDialog = true
+        })
+    },
+    close() {
+      this.permissionDialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+    closeAdd() {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+    save() {
+      this.onSend()
+    },
+    selectedItem(item) {
+      this.permissionDialog = true
+      this.editedIndex = item.id
+    },
+    validateStatus(validation) {
+      return typeof validation != 'undefined' ? validation.$error : false
+    },
+    reset() {
+      this.$refs.form.reset()
+    },
+    async onSend() {
+      this.$v.$touch()
+      if (!this.$v.$invalid) {
+        this.isLoading = true
+        await axios
+          .post('/roles/store', this.role)
+          .then(res => {
+            this.getDataFromApi()
+            this.closeAdd()
+            this.isLoading = false
+            this.reset()
+          })
+          .catch(error => {
+            if (error.response.data.errors) {
+              this.errorsLog = error.response.data.errors
+            } else {
+              this.errorsLog = { err: ['Role can not saved now !'] }
+            }
+            this.errorDialog = true
+            this.isLoading = false
+          })
+      }
+    },
+    async onSendPermission() {
+      this.isLoading = true
+      await axios
+        .post(`/roles/assign-permissions/${this.editedIndex}`, this.permissions)
+        .then(res => {
+          this.permissions.permissions = []
+          this.close()
+          this.isLoading = false
+        })
+        .catch(error => {
+          if (error.response.data.errors) {
+            this.errorsLog = error.response.data.errors
+          } else {
+            this.errorsLog = { err: ['Permission can not assigned now !'] }
+          }
+          this.errorDialog = true
+          this.isLoading = false
+        })
+    },
+  },
+  validations: {
+    role: {
+      name: { required },
+    },
   },
 }
 </script>

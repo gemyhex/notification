@@ -1,15 +1,25 @@
 <template>
-  <div class="container">
-    <div v-if="clients.length">
-      <v-data-table :headers="headers" :items="clients" sort-by="id" class="elevation-1">
+  <div>
+    <div v-if="items">
+      <v-data-table
+        :headers="$t('headers')"
+        :items="items"
+        :options.sync="options"
+        :server-items-length="total"
+        :loading="loading"
+        :locale="lang"
+        class="elevation-1"
+      >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Clients</v-toolbar-title>
+            <v-toolbar-title>{{ $t('Clients') }}</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on"> New Client </v-btn>
+                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on">
+                  {{ $t('headings.new_client') }}
+                </v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -18,55 +28,99 @@
 
                 <v-card-text>
                   <v-container>
-                    <v-form @submit.prevent>
+                    <v-form @submit.prevent ref="form">
                       <v-row>
                         <v-col cols="12" md="6">
+                          <label id="lbl_inp">{{ $t('forms.fullname') }} <span class="text-danger">*</span></label>
                           <v-text-field
                             id="Fullname"
                             v-model.trim="$v.client.name.$model"
                             outlined
-                            dense
                             placeholder="Fullname"
                             hide-details
                             aria-required="true"
-                            :class="{ 'is-invalid': validateStatus($v.client.name) }"
+                            :class="{ 'is-invalid': validateStatus($v.client.name), 'mt-3': true }"
                           ></v-text-field>
                           <div v-if="!$v.client.name.required" class="invalid-feedback">
-                            The fullname field is required.
+                            {{ $t('auths.fullname') }}.
                           </div>
                         </v-col>
 
                         <v-col cols="12" md="6">
+                          <label id="lbl_inp">{{ $t('forms.phone') }} <span class="text-danger">*</span></label>
                           <v-text-field
                             id="phone"
                             v-model.trim="$v.client.phone.$model"
                             outlined
                             type="number"
-                            dense
                             placeholder="Phone"
                             hide-details
                             aria-required="true"
-                            :class="{ 'is-invalid': validateStatus($v.client.phone) }"
+                            :class="{ 'is-invalid': validateStatus($v.client.phone), 'mt-3': true }"
                           ></v-text-field>
-                          <div v-if="!$v.client.phone.required" class="invalid-feedback">
-                            The phone field is required.
-                          </div>
+                          <div v-if="!$v.client.phone.required" class="invalid-feedback">{{ $t('auths.phone') }}.</div>
                         </v-col>
 
                         <v-col cols="12" md="6">
+                          <label id="lbl_inp">{{ $t('forms.address') }} <span class="text-danger">*</span></label>
                           <v-text-field
                             id="address"
                             v-model.trim="$v.client.address.$model"
                             type="text"
                             outlined
-                            dense
                             placeholder="Address"
                             hide-details
-                            :class="{ 'is-invalid': validateStatus($v.client.address) }"
+                            :class="{ 'is-invalid': validateStatus($v.client.address), 'mt-3': true }"
                           ></v-text-field>
                           <div v-if="!$v.client.address.required" class="invalid-feedback">
-                            The address field is required.
+                            {{ $t('auths.address') }}.
                           </div>
+                        </v-col>
+
+                        <v-col cols="12" md="6" v-if="!isEditing">
+                          <label id="lbl_inp">{{ $t('forms.password') }} <span class="text-danger">*</span></label>
+                          <v-text-field
+                            v-model="$v.user.password.$model"
+                            outlined
+                            :type="isPasswordVisible ? 'text' : 'password'"
+                            placeholder="············"
+                            :append-icon="isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline"
+                            hide-details
+                            @click:append="isPasswordVisible = !isPasswordVisible"
+                            :class="{ 'is-invalid': validateStatus($v.user.email), 'mt-3': true }"
+                          ></v-text-field>
+                          <div v-if="!$v.user.password.required" class="invalid-feedback">
+                            {{ $t('auths.password') }}.
+                          </div>
+                          <div v-if="!$v.user.password.minLength" class="invalid-feedback">
+                            {{ $t('auths.passLess', { pass: $v.user.password.$params.minLength.min }) }}.
+                          </div>
+                        </v-col>
+
+                        <v-col cols="12" md="6" v-if="!isEditing">
+                          <label id="lbl_inp">{{ $t('forms.username') }} <span class="text-danger">*</span></label>
+                          <v-text-field
+                            v-model="$v.user.username.$model"
+                            outlined
+                            placeholder="Username"
+                            hide-details
+                            :class="{ 'is-invalid': validateStatus($v.user.username), 'mt-3': true }"
+                          ></v-text-field>
+                          <div v-if="!$v.user.username.required" class="invalid-feedback">
+                            {{ $t('auths.username') }}.
+                          </div>
+                        </v-col>
+
+                        <v-col cols="12" md="6" v-if="!isEditing">
+                          <label id="lbl_inp">{{ $t('forms.email') }} <span class="text-danger">*</span></label>
+                          <v-text-field
+                            v-model="$v.user.email.$model"
+                            outlined
+                            placeholder="john@example.com"
+                            hide-details
+                            :class="{ 'is-invalid': validateStatus($v.user.email), 'mt-3': true }"
+                          ></v-text-field>
+                          <div v-if="!$v.user.email.required" class="invalid-feedback">{{ $t('auths.email') }}.</div>
                         </v-col>
                       </v-row>
                     </v-form>
@@ -75,12 +129,14 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-                  <v-btn color="blue darken-1" type="submit" text @click.stop="save" v-if="!isLoading"> Save </v-btn>
-                  <v-btn v-else type="submit" color="blue darken-1">
+                  <v-btn color="error" @click="close"> {{ $t('btns.cancel') }} </v-btn>
+                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading">
+                    {{ $t('btns.save') }}
+                  </v-btn>
+                  <v-btn v-else type="submit" color="success">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Saving...
+                      {{ $t('btns.saving') }}...
                     </button>
                   </v-btn>
                 </v-card-actions>
@@ -88,15 +144,17 @@
             </v-dialog>
             <v-dialog v-model="dialogDelete" max-width="500px">
               <v-card>
-                <v-card-title class="text-h6">Are you sure you want to delete this item?</v-card-title>
+                <v-card-title class="text-h6">{{ $t('msgs.delete_confirm') }}</v-card-title>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                  <v-btn color="blue darken-1" text @click="deleteItemConfirm($event)" v-if="!isDeleteing">OK</v-btn>
-                  <v-btn v-else type="submit" color="blue darken-1">
+                  <v-btn color="error" @click="closeDelete">{{ $t('btns.cancel') }}</v-btn>
+                  <v-btn color="success" @click="deleteItemConfirm($event)" v-if="!isDeleteing">{{
+                    $t('btns.ok')
+                  }}</v-btn>
+                  <v-btn v-else type="submit" color="error">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Deleteing...
+                      {{ $t('btns.deleting') }}...
                     </button>
                   </v-btn>
                   <v-spacer></v-spacer>
@@ -106,11 +164,17 @@
           </v-toolbar>
         </template>
         <template v-slot:item.id="{ item }">
-          {{ clients.indexOf(item) + 1 }}
+          <v-chip small color="primary">
+            {{ items.indexOf(item) + 1 }}
+          </v-chip>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="editItem(item)"> {{ icons.mdiPencil }} </v-icon>
-          <v-icon small @click="deleteItem(item, $event)"> {{ icons.mdiDelete }} </v-icon>
+          <v-chip small color="success" class="mr-2" @click="editItem(item)">
+            <v-icon small> {{ icons.mdiPencil }} </v-icon>
+          </v-chip>
+          <v-chip color="error" small @click="deleteItem(item)">
+            <v-icon small> {{ icons.mdiDelete }} </v-icon>
+          </v-chip>
         </template>
       </v-data-table>
     </div>
@@ -323,20 +387,18 @@
       <v-col>
         <v-dialog v-model="errorDialog" max-width="350">
           <v-card>
-            <v-card-title class="text-h5">
-              <v-icon size="40">
+            <v-card-title class="text-h4">
+              <v-icon size="50">
                 {{ icons.mdiAlertCircleOutline }}
               </v-icon>
-              Oops !
+              <span>Oops !</span>
             </v-card-title>
-
+            <v-spacer></v-spacer>
             <v-card-text>
               <ul>
-                <li v-for="(err, i) in errors" v-if="errors.length > 1" :key="i" class="py-3 text-center">
-                  {{ err[0] }}
-                </li>
-                <li v-if="errors.length == 1" class="py-3 text-center">
-                  {{ errors[0] }}
+                <li v-for="(err, i, idx) in errorsLog" :key="i" class="py-1 my-3 text-center d-flex text-center">
+                  <v-chip color="error" small>{{ idx + 1 }}</v-chip>
+                  <p class="m-0 px-3">{{ err[0] }}</p>
                 </li>
               </ul>
             </v-card-text>
@@ -351,7 +413,6 @@
     </v-row>
   </div>
 </template>
-
 <script>
 import {
   mdiArrowLeft,
@@ -364,17 +425,15 @@ import {
   mdiDelete,
 } from '@mdi/js'
 import axios from 'axios'
-import { required } from 'vuelidate/lib/validators'
+import { required, email, minLength } from 'vuelidate/lib/validators'
 
 export default {
-  name: 'Clients',
   data() {
     return {
       isLoading: false,
+      isPasswordVisible: false,
       dialog: false,
-      perPage: 5,
-      currentPage: 1,
-      errors: ['Something Went Wrong !'],
+      errorsLog: { err: ['Something Went Wrong !'] },
       errorDialog: false,
       successDialog: false,
       isError: false,
@@ -382,6 +441,8 @@ export default {
       deletedIndex: -1,
       dialogDelete: false,
       isDeleteing: false,
+      isEditing: false,
+      lang: localStorage.getItem('lang'),
       icons: {
         mdiArrowLeft,
         mdiArrowRight,
@@ -396,11 +457,19 @@ export default {
         name: null,
         phone: null,
         address: null,
+        email: null,
+        password: null,
+        username: null,
       },
+      total: 0,
+      items: [],
+      loading: true,
+      options: {},
       headers: [
         {
           text: 'Id',
           align: 'start',
+          sortable: false,
           value: 'id',
         },
         { text: 'Name', value: 'name' },
@@ -408,21 +477,15 @@ export default {
         { text: 'Address', value: 'address' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      clients: [],
     }
   },
-  computed: {
-    rows() {
-      return this.clients.length
-    },
-    Clients() {
-      return this.clients
-    },
-    formTitle() {
-      return this.editedIndex === -1 ? 'New Client' : 'Edit Client'
-    },
-  },
   watch: {
+    options: {
+      handler() {
+        this.getDataFromApi()
+      },
+      deep: true,
+    },
     dialog(val) {
       val || this.close()
     },
@@ -430,27 +493,43 @@ export default {
       val || this.closeDelete()
     },
   },
-  mounted() {
-    axios
-      .get('/clients')
-      .then(res => {
-        this.clients = res.data.response
-      })
-      .catch(error => {
-        this.isError = true
-      })
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? this.$t('headings.new_client') : this.$t('headings.edit_client')
+    },
   },
   methods: {
+    getDataFromApi() {
+      let self = this
+      const { page, itemsPerPage } = this.options
+      axios
+        .get('/clients', { params: { page: page, per_page: itemsPerPage } })
+        .then(res => {
+          self.items = res.data.response.data
+          self.total = res.data.response.meta.total
+          self.loading = false
+        })
+        .catch(error => {
+          if (error.response.data.errors) {
+            this.errorsLog = error.response.data.errors
+          } else {
+            this.errorsLog = { err: ['Clients can not load now !'] }
+          }
+          this.isError = true
+          this.errorDialog = true
+        })
+    },
     editItem(item) {
+      this.isEditing = true
       this.editedIndex = item.id
-      this.arrIndex = this.clients.indexOf(item)
-      this.client = this.clients[this.arrIndex]
+      this.arrIndex = this.items.indexOf(item)
+      this.client = this.items[this.arrIndex]
       this.dialog = true
     },
 
     deleteItem(item) {
       this.editedIndex = item.id
-      this.arrIndex = this.clients.indexOf(item)
+      this.arrIndex = this.items.indexOf(item)
       this.dialogDelete = true
     },
 
@@ -459,16 +538,21 @@ export default {
       await axios
         .delete(`/clients/${this.editedIndex}`)
         .then(res => {
-          this.clients.splice(this.arrIndex, 1)
+          this.items.splice(this.arrIndex, 1)
           this.isDeleteing = false
+          this.getDataFromApi()
         })
         .catch(error => {
-          console.log(error)
+          if (error.response.data.errors) {
+            this.errorsLog = error.response.data.errors
+          } else {
+            this.errorsLog = { err: ['Client can not deleted now !'] }
+          }
+          this.errorDialog = true
           this.isDeleteing = false
         })
       this.closeDelete()
     },
-
     close() {
       this.dialog = false
       this.$nextTick(() => {
@@ -476,7 +560,6 @@ export default {
         this.editedIndex = -1
       })
     },
-
     closeDelete() {
       this.dialogDelete = false
       this.$nextTick(() => {
@@ -484,7 +567,6 @@ export default {
         this.editedIndex = -1
       })
     },
-
     save() {
       if (this.editedIndex > -1) {
         // Object.assign(this.desserts[this.editedIndex], this.editedItem)
@@ -499,6 +581,9 @@ export default {
     validateStatus(validation) {
       return typeof validation != 'undefined' ? validation.$error : false
     },
+    reset() {
+      this.$refs.form.reset()
+    },
     async onSend() {
       this.$v.$touch()
       if (!this.$v.$invalid) {
@@ -506,42 +591,45 @@ export default {
         await axios
           .post('/clients/store', this.client)
           .then(res => {
-            if (res.data.errors) {
-              this.errors = res.data.errors
-              this.errorDialog = true
-              this.isLoading = false
-            } else {
-              this.clients.push(res.data.response)
-              this.close()
-              this.isLoading = false
-            }
+            this.getDataFromApi()
+            this.close()
+            this.isLoading = false
+            this.reset()
           })
           .catch(error => {
-            this.error = error.response
+            if (error.response.data.errors) {
+              this.errorsLog = error.response.data.errors
+            } else {
+              this.errorsLog = { err: ['Client can not send now !'] }
+            }
+            this.errorDialog = true
             this.isLoading = false
           })
       }
     },
     async onUpdate() {
-      this.$v.$touch()
-      if (!this.$v.$invalid) {
-        this.isLoading = true
-        await axios
-          .patch(`/clients/update/${this.editedIndex}`, {
-            name: this.client.name,
-            phone: this.client.phone,
-            address: this.client.address,
-          })
-          .then(() => {
-            this.client = this.clients[this.arrIndex]
-            this.isLoading = false
-            this.close()
-          })
-          .catch(error => {
-            this.isError = true
-            this.isLoading = false
-          })
-      }
+      this.isLoading = true
+      await axios
+        .patch(`/clients/update/${this.editedIndex}`, {
+          name: this.client.name,
+          phone: this.client.phone,
+          address: this.client.address,
+        })
+        .then(() => {
+          this.isLoading = false
+          this.close()
+          this.getDataFromApi()
+        })
+        .catch(error => {
+          if (error.response.data.errors) {
+            this.errorsLog = error.response.data.errors
+          } else {
+            this.errorsLog = { err: ['client can not update now !'] }
+          }
+          this.isError = true
+          this.isLoading = false
+          this.errorDialog = true
+        })
     },
   },
   validations: {
@@ -549,6 +637,11 @@ export default {
       name: { required },
       phone: { required },
       address: { required },
+    },
+    user: {
+      email: { required, email },
+      password: { required, minLength: minLength(8) },
+      username: { required },
     },
   },
 }

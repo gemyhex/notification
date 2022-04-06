@@ -1,7 +1,14 @@
 <template>
-  <div class="container">
-    <div v-if="docs">
-      <v-data-table :headers="headers" :items="docs" sort-by="id" class="elevation-1">
+  <div>
+    <div v-if="items">
+      <v-data-table
+        :headers="headers"
+        :items="items"
+        :options.sync="options"
+        :server-items-length="total"
+        :loading="loading"
+        class="elevation-1"
+      >
         <template v-slot:top>
           <v-toolbar flat>
             <v-toolbar-title>Employee Documents</v-toolbar-title>
@@ -9,7 +16,7 @@
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on"> New Document </v-btn>
+                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on"> New Emp Doc </v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -18,8 +25,9 @@
 
                 <v-card-text>
                   <v-container>
-                    <v-form @submit.prevent="onSend">
+                    <v-form @submit.prevent="onSend" ref="form">
                       <v-row>
+                        <p>{{ errorDialog }}</p>
                         <v-col cols="12" md="6">
                           <label id="lbl_inp" for="employee">Employee <span class="text-danger">*</span></label>
                           <select
@@ -38,16 +46,24 @@
                         </v-col>
                         <v-col cols="12" md="6">
                           <label id="lbl_inp" for="document">Document <span class="text-danger">*</span></label>
-                          <select
+                          <v-select
+                            :items="documentsNames"
+                            :menu-props="{ maxHeight: '400' }"
+                            persistent-hint
+                            :class="{ 'is-invalid': validateStatus($v.document.document_id) }"
+                            @change="onChange"
+                          ></v-select>
+                          <!-- <select
                             id="document"
                             v-model="$v.document.document_id.$model"
+                            multiple
                             :class="{ 'is-invalid': validateStatus($v.document.document_id), 'form-select mt-3': true }"
                           >
                             <option disabled selected>Select Document</option>
                             <option v-for="doc in documents" :key="doc.id" :value="doc.id">
                               {{ doc.name }}
                             </option>
-                          </select>
+                          </select> -->
                           <div v-if="!$v.document.document_id.required" class="invalid-feedback">
                             The document field is required.
                           </div>
@@ -86,9 +102,9 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-                  <v-btn color="blue darken-1" type="submit" text @click.stop="save" v-if="!isLoading"> Save </v-btn>
-                  <v-btn v-else type="submit" color="blue darken-1">
+                  <v-btn color="error" @click="close"> Cancel </v-btn>
+                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading"> Save </v-btn>
+                  <v-btn v-else type="submit" color="success">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                       Saving...
@@ -100,7 +116,17 @@
           </v-toolbar>
         </template>
         <template v-slot:item.id="{ item }">
-          {{ docs.indexOf(item) + 1 }}
+          <v-chip small color="primary">
+            {{ items.indexOf(item) + 1 }}
+          </v-chip>
+        </template>
+        <template v-slot:item.actions="{ item }">
+          <v-chip small color="success" class="mr-2" @click="editItem(item)">
+            <v-icon small> {{ icons.mdiPencil }} </v-icon>
+          </v-chip>
+          <v-chip color="error" small @click="deleteItem(item)">
+            <v-icon small> {{ icons.mdiDelete }} </v-icon>
+          </v-chip>
         </template>
       </v-data-table>
     </div>
@@ -313,20 +339,18 @@
       <v-col>
         <v-dialog v-model="errorDialog" max-width="350">
           <v-card>
-            <v-card-title class="text-h5">
-              <v-icon size="40">
+            <v-card-title class="text-h4">
+              <v-icon size="50">
                 {{ icons.mdiAlertCircleOutline }}
               </v-icon>
-              Oops !
+              <span>Oops !</span>
             </v-card-title>
-
+            <v-spacer></v-spacer>
             <v-card-text>
               <ul>
-                <li v-for="(err, i) in errors" v-if="errors.length > 1" :key="i" class="py-3 text-center">
-                  {{ err }}
-                </li>
-                <li v-if="errors.length == 1" class="py-3 text-center">
-                  {{ errors }}
+                <li v-for="(err, i, idx) in errorsLog" :key="i" class="py-1 my-3 text-center d-flex text-center">
+                  <v-chip color="error" small>{{ idx + 1 }}</v-chip>
+                  <p class="m-0 px-3">{{ err[0] }}</p>
                 </li>
               </ul>
             </v-card-text>
@@ -341,9 +365,17 @@
     </v-row>
   </div>
 </template>
-
 <script>
-import { mdiArrowLeft, mdiArrowRight, mdiChevronLeft, mdiChevronRight, mdiClose, mdiPencil, mdiDelete } from '@mdi/js'
+import {
+  mdiArrowLeft,
+  mdiArrowRight,
+  mdiChevronLeft,
+  mdiChevronRight,
+  mdiAlertCircleOutline,
+  mdiClose,
+  mdiPencil,
+  mdiDelete,
+} from '@mdi/js'
 import axios from 'axios'
 import { required } from 'vuelidate/lib/validators'
 
@@ -352,9 +384,7 @@ export default {
     return {
       isLoading: false,
       dialog: false,
-      perPage: 5,
-      currentPage: 1,
-      errors: ['Something Went Wrong !'],
+      errorsLog: { err: ['Something Went Wrong !'] },
       errorDialog: false,
       successDialog: false,
       isError: false,
@@ -367,59 +397,131 @@ export default {
         mdiArrowRight,
         mdiChevronLeft,
         mdiChevronRight,
+        mdiAlertCircleOutline,
         mdiClose,
         mdiPencil,
         mdiDelete,
       },
+      total: 0,
+      items: [],
+      loading: true,
+      options: {},
       document: {
         employee_id: null,
-        document_id: null,
+        document_id: [],
         type: null,
         due_date: null,
       },
       employees: null,
       documents: null,
+      documentsNames: [],
       headers: [
         {
           text: 'ID',
           align: 'start',
           value: 'id',
         },
-        { text: 'Employee', value: 'employee' },
-        { text: 'Name', value: 'document' },
-        { text: 'Date', value: 'due_date' },
-        { text: 'Type', value: 'type' },
+        {
+          text: 'Employee',
+          value: 'employee',
+        },
+        {
+          text: 'Name',
+          value: 'document',
+        },
+        {
+          text: 'Date',
+          value: 'due_date',
+        },
+        {
+          text: 'Type',
+          value: 'type',
+        },
       ],
-      docs: null,
     }
   },
-  computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? 'New Company' : 'Edit Company'
-    },
+  mounted() {
+    axios
+      .get('/employees')
+      .then(res => {
+        this.employees = res.data.response.data
+      })
+      .catch(error => {
+        if (error.response.data.errors) {
+          this.errorsLog = error.response.data.errors
+        } else {
+          this.errorsLog = { err: ['Employees can not load now !'] }
+        }
+        this.errorDialog = true
+      })
+    axios
+      .get('/documents')
+      .then(res => {
+        this.documents = res.data.response.data
+        this.documents.map(dname => {
+          this.documentsNames.push(dname.name)
+        })
+      })
+      .catch(error => {
+        if (error.response.data.errors) {
+          this.errorsLog = error.response.data.errors
+        } else {
+          this.errorsLog = { err: ['Documents can not load now !'] }
+        }
+
+        this.errorDialog = true
+      })
   },
   watch: {
+    options: {
+      handler() {
+        this.getDataFromApi()
+      },
+      deep: true,
+    },
     dialog(val) {
       val || this.close()
     },
   },
-  mounted() {
-    axios
-      .get('/employees/get/notifications')
-      .then(res => {
-        this.docs = res.data.response
-      })
-      .catch(error => {
-        this.isError = true
-      })
-    axios.get('/employees').then(res => {
-      this.employees = res.data.response
-    })
-    axios.get('/documents').then(res => {
-      this.documents = res.data.response
-    })
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? 'New Emp Doc' : 'Edit Emp Doc'
+    },
   },
   methods: {
+    getDataFromApi() {
+      this.loading = true
+      let self = this
+      const { page, itemsPerPage } = this.options
+      axios
+        .get('/employees/get/notifications', { params: { page: page, per_page: itemsPerPage } })
+        .then(res => {
+          self.items = res.data.response.data
+          self.total = res.data.response.meta.total
+          self.loading = false
+        })
+        .catch(error => {
+          if (error.response.data.errors) {
+            this.errorsLog = error.response.data.errors
+          } else {
+            this.errorsLog = { err: ['Data can not load now !'] }
+          }
+          this.errorDialog = true
+          this.isError = true
+        })
+    },
+    onChange(ev) {
+      const ids = this.documents.find(({ name }) => name == ev)
+      this.document.document_id = [ids.id]
+    },
+    reset() {
+      this.$refs.form.reset()
+    },
+    editItem(item) {
+      this.editedIndex = item.id
+      this.arrIndex = this.items.indexOf(item)
+      this.dialog = true
+    },
     close() {
       this.dialog = false
       this.$nextTick(() => {
@@ -428,7 +530,15 @@ export default {
       })
     },
     save() {
-      this.onSend()
+      if (this.editedIndex > -1) {
+        // Object.assign(this.desserts[this.editedIndex], this.editedItem)
+        // console.log('edit client')
+        this.onUpdate()
+      } else {
+        // this.desserts.push(this.editedItem)
+        // console.log('send new client')
+        this.onSend()
+      }
     },
     validateStatus(validation) {
       return typeof validation != 'undefined' ? validation.$error : false
@@ -440,31 +550,18 @@ export default {
         await axios
           .post(`/employees/assign-documents/${this.document.employee_id}`, this.document)
           .then(res => {
-            if (res.data.errors) {
-              this.errors = res.data.errors
-              this.errorDialog = true
-              this.isLoading = false
-            } else {
-              let emp = res.data.response
-              // this.docs.push({
-              //   employee: this.employees[this.document.employee_id],
-              //   name: this.documents[this.document.document_id],
-              //   due_date: this.document.due_date,
-              //   type: this.document.type,
-              // })
-              console.log('all docs: ', this.docs)
-              console.log('res: ', {
-                name: this.documents[this.document.document_id],
-                employee: emp.company.client.name,
-                due_date: this.document.due_date,
-                type: this.document.type,
-              })
-              this.close()
-              this.isLoading = false
-            }
+            this.close()
+            this.getDataFromApi()
+            this.isLoading = false
+            this.reset()
           })
           .catch(error => {
-            this.error = error.response
+            if (error.response.data.errors) {
+              this.errorsLog = error.response.data.errors
+            } else {
+              this.errorsLog = { err: ['Documents can not send now !'] }
+            }
+            this.errorDialog = true
             this.isLoading = false
           })
       }
@@ -472,10 +569,18 @@ export default {
   },
   validations: {
     document: {
-      employee_id: { required },
-      document_id: { required },
-      type: { required },
-      due_date: { required },
+      employee_id: {
+        required,
+      },
+      document_id: {
+        required,
+      },
+      type: {
+        required,
+      },
+      due_date: {
+        required,
+      },
     },
   },
 }

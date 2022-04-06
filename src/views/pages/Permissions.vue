@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div v-if="items">
+    <div v-if="permissions">
       <v-data-table
         :headers="headers"
-        :items="items"
+        :items="permissions"
         :options.sync="options"
         :server-items-length="total"
         :loading="loading"
@@ -11,12 +11,12 @@
       >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Companies</v-toolbar-title>
+            <v-toolbar-title>Permissions</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on"> New Company </v-btn>
+                <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on"> New Permission </v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -25,41 +25,20 @@
 
                 <v-card-text>
                   <v-container>
-                    <v-form @submit.prevent="onSend" ref="form">
+                    <v-form @submit.prevent>
                       <v-row>
                         <v-col cols="12" md="6">
-                          <label id="lbl_inp" for="types">Company Type <span class="text-danger">*</span></label>
-                          <select
-                            id="types"
-                            v-model="$v.company.company_type_id.$model"
-                            :class="{
-                              'is-invalid': validateStatus($v.company.company_type_id),
-                              'form-select mt-3': true,
-                            }"
-                          >
-                            <option disabled selected>Select Type</option>
-                            <option v-for="type in types" :key="type.id" :value="type.id">
-                              {{ type.type }}
-                            </option>
-                          </select>
-                          <div v-if="!$v.company.company_type_id.required" class="invalid-feedback">
-                            The company type field is required.
-                          </div>
-                        </v-col>
-                        <v-col cols="12" md="6">
-                          <label id="lbl_inp" for="types">Company Name <span class="text-danger">*</span></label>
                           <v-text-field
-                            id="company_name"
-                            v-model.trim="$v.company.name.$model"
+                            id="name"
+                            v-model.trim="$v.role.name.$model"
                             outlined
                             dense
-                            placeholder="Company Name"
+                            placeholder="name"
                             hide-details
-                            :class="{ 'is-invalid': validateStatus($v.company.name), 'mt-3': true }"
+                            aria-required="true"
+                            :class="{ 'is-invalid': validateStatus($v.role.name) }"
                           ></v-text-field>
-                          <div v-if="!$v.company.name.required" class="invalid-feedback">
-                            The name field is required.
-                          </div>
+                          <div v-if="!$v.role.name.required" class="invalid-feedback">The name field is required.</div>
                         </v-col>
                       </v-row>
                     </v-form>
@@ -68,9 +47,9 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="error" @click="close"> Cancel </v-btn>
-                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading"> Save </v-btn>
-                  <v-btn v-else type="submit" color="success">
+                  <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
+                  <v-btn color="blue darken-1" type="submit" text @click.stop="save" v-if="!isLoading"> Save </v-btn>
+                  <v-btn v-else type="submit" color="blue darken-1">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                       Saving...
@@ -79,37 +58,10 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
-            <v-dialog v-model="dialogDelete" max-width="500px">
-              <v-card>
-                <v-card-title class="text-h6">Are you sure you want to delete this item?</v-card-title>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="error" @click="closeDelete">Cancel</v-btn>
-                  <v-btn color="success" @click="deleteItemConfirm($event)" v-if="!isDeleteing">OK</v-btn>
-                  <v-btn v-else type="submit" color="error">
-                    <button type="button" disabled>
-                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Deleteing...
-                    </button>
-                  </v-btn>
-                  <v-spacer></v-spacer>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
           </v-toolbar>
         </template>
         <template v-slot:item.id="{ item }">
-          <v-chip small color="primary">
-            {{ items.indexOf(item) + 1 }}
-          </v-chip>
-        </template>
-        <template v-slot:item.actions="{ item }">
-          <v-chip small color="success" class="mr-2" @click="editItem(item)">
-            <v-icon small> {{ icons.mdiPencil }} </v-icon>
-          </v-chip>
-          <v-chip color="error" small @click="deleteItem(item)">
-            <v-icon small> {{ icons.mdiDelete }} </v-icon>
-          </v-chip>
+          {{ permissions.indexOf(item) + 1 }}
         </template>
       </v-data-table>
     </div>
@@ -322,19 +274,16 @@
       <v-col>
         <v-dialog v-model="errorDialog" max-width="350">
           <v-card>
-            <v-card-title class="text-h4">
-              <v-icon size="50">
+            <v-card-title class="text-h5">
+              <v-icon size="40">
                 {{ icons.mdiAlertCircleOutline }}
               </v-icon>
-              <span>Oops !</span>
+              Oops !
             </v-card-title>
-            <v-spacer></v-spacer>
+
             <v-card-text>
               <ul>
-                <li v-for="(err, i, idx) in errorsLog" :key="i" class="py-1 my-3 text-center d-flex text-center">
-                  <v-chip color="error" small>{{ idx + 1 }}</v-chip>
-                  <p class="m-0 px-3">{{ err[0] }}</p>
-                </li>
+                <li v-for="(err, i) in errorsLog" :key="i" class="py-3 text-center">{{ err[0] }}</li>
               </ul>
             </v-card-text>
 
@@ -367,7 +316,7 @@ export default {
     return {
       isLoading: false,
       dialog: false,
-      errorsLog: { err: ['Something Went Wrong !'] },
+      errors: ['Something Went Wrong !'],
       errorDialog: false,
       successDialog: false,
       isError: false,
@@ -385,15 +334,11 @@ export default {
         mdiPencil,
         mdiDelete,
       },
-      company: {
+      role: {
         name: null,
-        // client_id: null,
-        company_type_id: null,
       },
-      clients: null,
-      types: null,
       total: 0,
-      items: [],
+      permissions: [],
       loading: true,
       options: {},
       headers: [
@@ -404,38 +349,8 @@ export default {
           value: 'id',
         },
         { text: 'Name', value: 'name' },
-        { text: 'Type', value: 'company_type.type' },
-        { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
-  },
-  mounted() {
-    axios
-      .get('/company-types')
-      .then(res => {
-        this.types = res.data.response.data
-      })
-      .catch(error => {
-        if (error.response.data.errors) {
-          this.errorsLog = error.response.data.errors
-        } else {
-          this.errorsLog = { err: ['Company Types can not load now !'] }
-        }
-        this.errorDialog = true
-      })
-    axios
-      .get('/clients')
-      .then(res => {
-        this.clients = res.data.response.data
-      })
-      .catch(error => {
-        if (error.response.data.errors) {
-          this.errorsLog = error.response.data.errors
-        } else {
-          this.errorsLog = { err: ['Clients can not load now !'] }
-        }
-        this.errorDialog = true
-      })
   },
   watch: {
     options: {
@@ -447,13 +362,10 @@ export default {
     dialog(val) {
       val || this.close()
     },
-    dialogDelete(val) {
-      val || this.closeDelete()
-    },
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Company' : 'Edit Company'
+      return this.editedIndex === -1 ? 'New Permission' : 'Edit Permission'
     },
   },
   methods: {
@@ -462,53 +374,17 @@ export default {
       let self = this
       const { page, itemsPerPage } = this.options
       axios
-        .get('/companies', { params: { page: page, per_page: itemsPerPage } })
+        .get('/roles/permissions', { params: { page: page, per_page: itemsPerPage } })
         .then(res => {
-          self.items = res.data.response.data
+          self.permissions = res.data.response.data
           self.total = res.data.response.meta.total
           self.loading = false
         })
         .catch(error => {
-          if (error.response.data.errors) {
-            this.errorsLog = error.response.data.errors
-          } else {
-            this.errorsLog = { err: ['Companies can not load now !'] }
-          }
           this.isError = true
+          this.errorsLog = error.response.data.errors
           this.errorDialog = true
         })
-    },
-    editItem(item) {
-      this.editedIndex = item.id
-      this.arrIndex = this.items.indexOf(item)
-      this.client = this.items[this.arrIndex]
-      this.dialog = true
-    },
-
-    deleteItem(item) {
-      this.editedIndex = item.id
-      this.arrIndex = this.items.indexOf(item)
-      this.dialogDelete = true
-    },
-
-    async deleteItemConfirm() {
-      this.isDeleteing = true
-      await axios
-        .delete(`/companies/${this.editedIndex}`)
-        .then(res => {
-          this.getDataFromApi()
-          this.isDeleteing = false
-        })
-        .catch(error => {
-          if (error.response.data.errors) {
-            this.errorsLog = error.response.data.errors
-          } else {
-            this.errorsLog = { err: ['Companies can not deleted now !'] }
-          }
-          this.errorDialog = true
-          this.isDeleteing = false
-        })
-      this.closeDelete()
     },
     close() {
       this.dialog = false
@@ -517,85 +393,41 @@ export default {
         this.editedIndex = -1
       })
     },
-    closeDelete() {
-      this.dialogDelete = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
     save() {
-      if (this.editedIndex > -1) {
-        // Object.assign(this.desserts[this.editedIndex], this.editedItem)
-        // console.log('edit client')
-        this.onUpdate()
-      } else {
-        // this.desserts.push(this.editedItem)
-        // console.log('send new client')
-        this.onSend()
-      }
+      this.onSend()
     },
     validateStatus(validation) {
       return typeof validation != 'undefined' ? validation.$error : false
-    },
-    reset() {
-      this.$refs.form.reset()
     },
     async onSend() {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.isLoading = true
         await axios
-          .post('/companies/store', this.company)
+          .post('/roles/assign-permissions/store', this.role)
           .then(res => {
-            this.getDataFromApi()
-            this.close()
-            this.isLoading = false
-            this.reset()
+            if (res.data.errors) {
+              this.errorsLog = res.data.errors
+              this.errorDialog = true
+              this.isLoading = false
+            } else {
+              this.permissions.push(this.permissions)
+              this.close()
+              this.isLoading = false
+              this.permissions = []
+            }
           })
           .catch(error => {
-            if (error.response.data.errors) {
-              this.errorsLog = error.response.data.errors
-            } else {
-              this.errorsLog = { err: ['Company can not send now !'] }
-            }
+            this.errorsLog = error.response.data.errors
             this.errorDialog = true
-            this.isLoading = false
-          })
-      }
-    },
-    async onUpdate() {
-      this.$v.$touch()
-      if (!this.$v.$invalid) {
-        this.isLoading = true
-        await axios
-          .patch(`/companies/update/${this.editedIndex}`, {
-            client_id: this.company.client_id,
-            company_type_id: this.company.company_type_id,
-            name: this.company.name,
-          })
-          .then(() => {
-            this.getDataFromApi()
-            this.isLoading = false
-            this.close()
-          })
-          .catch(error => {
-            if (error.response.data.errors) {
-              this.errorsLog = error.response.data.errors
-            } else {
-              this.errorsLog = { err: ['Company can not updated now !'] }
-            }
-            this.errorDialog = true
-            this.isError = true
             this.isLoading = false
           })
       }
     },
   },
   validations: {
-    company: {
+    permission: {
       name: { required },
-      company_type_id: { required },
     },
   },
 }

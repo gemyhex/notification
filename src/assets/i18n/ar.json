@@ -1,0 +1,74 @@
+{
+    "Dashboard": "لوحة التحكم",
+    "Clients": "العملاء",
+    "Companies": "الشركات",
+    "Document_Groups": "مجموعات الوثائق",
+    "Company_Types": "أنواع الشركات",
+    "Employees": "الموظفين",
+    "Documents": "الوثائق",
+    "Employee_Documents": "وثائق الموظفين",
+    "Roles": "الاوذونات",
+    "headers": [{
+            "text": "التسلسل",
+            "align": "start",
+            "sortable": false,
+            "value": "id"
+        },
+        {
+            "text": "الإسم",
+            "value": "name"
+        },
+        {
+            "text": "رقم الهاتف",
+            "value": "phone"
+        },
+        {
+            "text": "العنوان",
+            "value": "address"
+        },
+        {
+            "text": "العمليات",
+            "value": "actions",
+            "sortable": false
+        }
+    ],
+    "auths": {
+        "fullname": "حقل الاسم مطلوب",
+        "phone": "حقل الهاتف مطلوب",
+        "address": "حقل العنوان مطلوب",
+        "password": "حقل الرقم السري مطلوب",
+        "username": "حقل اسم المستخدم مطلوب",
+        "email": "حقل البريد الالكتروني مطلوب",
+        "passLess": "يجب ان يحتوي علي الاقل علي {pass} حروف"
+    },
+    "forms": {
+        "fullname": "الاسم بالكامل",
+        "phone": "الهاتف",
+        "address": "العنوان",
+        "password": "الرقم السري",
+        "username": "اسم المستخدم",
+        "email": " البريد الالكتروني"
+    },
+    "headings": {
+        "new_client": "اضافة عميل جديد",
+        "edit_client": "تعديل بيانات عميل"
+    },
+    "btns": {
+        "save": "حفظ",
+        "saving": "جاري الحفظ",
+        "cancel": "الغاء",
+        "ok": "حسنا",
+        "deleting": "جاري الحذف",
+        "login": "تسجيل الدخول",
+        "forgot_password": "نسيت كلمة السر؟",
+        "wait": "يرجي الانتظار",
+        "remember": "تذكرني؟",
+        "register": "إنشاء حساب جديد"
+    },
+    "msgs": {
+        "delete_confirm": "هل انت متاكد من حذف هذا العنصر ؟",
+        "welcome": "مرحبا بك في",
+        "signin": "سجل الدخول لحسابك و ابدأ المغامرة",
+        "new": "جديد في عالمنا؟"
+    }
+}

@@ -16,14 +16,16 @@
                   class="me-3"
                 ></v-img>
 
-                <h2 class="text-2xl font-weight-semibold">Dashboard</h2>
+                <h2 class="text-2xl font-weight-semibold">{{ $t('Dashboard') }}</h2>
               </router-link>
             </v-card-title>
 
             <!-- title -->
             <v-card-text>
-              <p class="text-2xl font-weight-semibold text--primary mb-2">Welcome to Dashboard! 👋🏻</p>
-              <p class="mb-2">Please sign-in to your account and start the adventure</p>
+              <p class="text-2xl font-weight-semibold text--primary mb-2">
+                {{ $t('msgs.welcome') }} {{ $t('Dashboard') }}! 👋🏻
+              </p>
+              <p class="mb-2">{{ $t('msgs.signin') }}</p>
             </v-card-text>
 
             <!-- login form -->
@@ -31,53 +33,53 @@
               <v-form @submit.prevent="onLogin">
                 <v-row>
                   <v-col>
-                    <label id="lbl_inp" for="group">Email <span class="text-danger">*</span></label>
+                    <label id="lbl_inp" for="group">{{ $t('forms.email') }} <span class="text-danger">*</span></label>
                     <v-text-field
                       v-model="$v.user.email.$model"
                       outlined
-                      label="Email"
                       placeholder="john@example.com"
                       hide-details
                       :class="{ 'is-invalid': validateStatus($v.user.email), 'mt-3': true }"
                     ></v-text-field>
-                    <div v-if="!$v.user.email.required" class="invalid-feedback">The email field is required.</div>
+                    <div v-if="!$v.user.email.required" class="invalid-feedback">{{ $t('auths.email') }}.</div>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <label id="lbl_inp" for="group">Password <span class="text-danger">*</span></label>
+                    <label id="lbl_inp" for="group"
+                      >{{ $t('forms.password') }} <span class="text-danger">*</span></label
+                    >
                     <v-text-field
                       v-model="$v.user.password.$model"
                       outlined
                       :type="isPasswordVisible ? 'text' : 'password'"
-                      label="Password"
                       placeholder="············"
                       :append-icon="isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline"
                       hide-details
                       @click:append="isPasswordVisible = !isPasswordVisible"
                       :class="{ 'is-invalid': validateStatus($v.user.email), 'mt-3': true }"
                     ></v-text-field>
-                    <div v-if="!$v.user.password.required" class="invalid-feedback">
-                      The password field is required.
-                    </div>
+                    <div v-if="!$v.user.password.required" class="invalid-feedback">{{ $t('auths.password') }}.</div>
                     <div v-if="!$v.user.password.minLength" class="invalid-feedback">
-                      You must have at least {{ $v.user.password.$params.minLength.min }} characters.
+                      {{ $t('auths.passLess', { pass: $v.user.password.$params.minLength.min }) }}.
                     </div>
                   </v-col>
                 </v-row>
 
                 <div class="d-flex align-center justify-space-between flex-wrap">
-                  <v-checkbox label="Remember Me" hide-details class="me-3 mt-1"> </v-checkbox>
+                  <v-checkbox :label="$t('btns.remember')" hide-details class="me-3 mt-1"> </v-checkbox>
 
                   <!-- forgot link -->
-                  <router-link to="/" class="mt-1"> Forgot Password? </router-link>
+                  <router-link to="/" class="mt-1"> {{ $t('btns.forgot_password') }} </router-link>
                 </div>
 
-                <v-btn v-if="!getState" type="submit" block color="primary" class="mt-6"> Login </v-btn>
+                <v-btn v-if="!getState" type="submit" block color="primary" class="mt-6">
+                  {{ $t('btns.login') }}
+                </v-btn>
                 <v-btn v-else type="submit" block color="primary" class="mt-6">
                   <button class="btn" type="button" disabled>
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    Please Wait...
+                    {{ $t('btns.wait') }}...
                   </button>
                 </v-btn>
               </v-form>
@@ -85,8 +87,8 @@
 
             <!-- create new account  -->
             <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">
-              <span class="me-2"> New on our platform? </span>
-              <router-link :to="{ name: 'register' }"> Create an account </router-link>
+              <span class="me-2"> {{ $t('msgs.new') }} </span>
+              <router-link :to="{ name: 'register' }"> {{ $t('btns.register') }} </router-link>
             </v-card-text>
           </v-card>
         </div>
@@ -117,8 +119,9 @@
             </v-card-title>
             <v-card-text>
               <ul>
-                <li class="py-3 primary text-center" dark>
-                  {{ getError }}
+                <li class="py-1 my-3 text-center d-flex text-center">
+                  <v-chip color="error" small>{{ 1 }}</v-chip>
+                  <p class="m-0 px-3">{{ getError }}</p>
                 </li>
               </ul>
             </v-card-text>
@@ -137,7 +140,7 @@
 <script>
 // eslint-disable-next-line object-curly-newline
 import { mdiEyeOutline, mdiEyeOffOutline, mdiAlertCircleOutline } from '@mdi/js'
-import { required, email, minLength } from 'vuelidate/lib/validators'
+import { required, minLength } from 'vuelidate/lib/validators'
 
 export default {
   data() {
@@ -167,16 +170,16 @@ export default {
     getDialog() {
       return this.$store.state.auth.login.dialoge
     },
+    getUser() {
+      return this.$store.state.auth.user
+    },
   },
   methods: {
     validateStatus(validation) {
       return typeof validation != 'undefined' ? validation.$error : false
     },
     onLogin() {
-      this.$v.$touch()
-      if (!this.$v.$invalid) {
-        this.$store.dispatch('LogIn', this.user)
-      }
+      this.$store.dispatch('LogIn', this.user)
     },
     CloseDialog() {
       this.$store.commit('DialogApperence', false)
@@ -184,7 +187,7 @@ export default {
   },
   validations: {
     user: {
-      email: { required, email },
+      email: { required },
       password: { required, minLength: minLength(8) },
     },
   },

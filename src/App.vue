@@ -26,18 +26,16 @@ export default {
 
       return 'layout-content'
     })
+    const lang = localStorage.getItem('lang') || 'en'
 
     return {
       resolveLayout,
+      lang,
     }
   },
 }
 </script>
 <style lang="scss">
-label#lbl_inp {
-  font-size: 1rem !important;
-  line-height: 1rem !important;
-}
 body {
   overflow: hidden;
 }
@@ -63,6 +61,10 @@ ul {
 ::-webkit-scrollbar-thumb {
   background-color: #000000;
   border: 2px solid #555555;
+}
+label#lbl_inp {
+  font-size: 1rem !important;
+  line-height: 1rem !important;
 }
 .liquid {
   display: flex;

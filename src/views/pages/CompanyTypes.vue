@@ -1,15 +1,22 @@
 <template>
-  <div class="container">
-    <div v-if="types">
-      <v-data-table :headers="headers" :items="types" sort-by="id" class="elevation-1">
+  <div>
+    <div v-if="items">
+      <v-data-table
+        :headers="headers"
+        :items="items"
+        :options.sync="options"
+        :server-items-length="total"
+        :loading="loading"
+        class="elevation-1"
+      >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Types</v-toolbar-title>
+            <v-toolbar-title>Company Types</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on"> New Type </v-btn>
+                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on"> New Company Type </v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -18,7 +25,7 @@
 
                 <v-card-text>
                   <v-container>
-                    <v-form @submit.prevent="onSend">
+                    <v-form @submit.prevent="onSend" ref="form">
                       <v-row>
                         <v-col cols="12" md="6">
                           <label id="lbl_inp" for="group">Company Type <span class="text-danger">*</span></label>
@@ -42,9 +49,9 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-                  <v-btn color="blue darken-1" type="submit" text @click.stop="save" v-if="!isLoading"> Save </v-btn>
-                  <v-btn v-else type="submit" color="blue darken-1">
+                  <v-btn color="error" @click="close"> Cancel </v-btn>
+                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading"> Save </v-btn>
+                  <v-btn v-else type="submit" color="success">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                       Saving...
@@ -58,9 +65,9 @@
                 <v-card-title class="text-h6">Are you sure you want to delete this item?</v-card-title>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-                  <v-btn color="blue darken-1" text @click="deleteItemConfirm($event)" v-if="!isDeleteing">OK</v-btn>
-                  <v-btn v-else type="submit" color="blue darken-1">
+                  <v-btn color="error" @click="closeDelete">Cancel</v-btn>
+                  <v-btn color="success" @click="deleteItemConfirm($event)" v-if="!isDeleteing">OK</v-btn>
+                  <v-btn v-else type="submit" color="error">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                       Deleteing...
@@ -73,11 +80,17 @@
           </v-toolbar>
         </template>
         <template v-slot:item.id="{ item }">
-          {{ types.indexOf(item) + 1 }}
+          <v-chip small color="primary">
+            {{ items.indexOf(item) + 1 }}
+          </v-chip>
         </template>
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="editItem(item)"> {{ icons.mdiPencil }} </v-icon>
-          <v-icon small @click="deleteItem(item, $event)"> {{ icons.mdiDelete }} </v-icon>
+          <v-chip small color="success" class="mr-2" @click="editItem(item)">
+            <v-icon small> {{ icons.mdiPencil }} </v-icon>
+          </v-chip>
+          <v-chip color="error" small @click="deleteItem(item)">
+            <v-icon small> {{ icons.mdiDelete }} </v-icon>
+          </v-chip>
         </template>
       </v-data-table>
     </div>
@@ -290,20 +303,18 @@
       <v-col>
         <v-dialog v-model="errorDialog" max-width="350">
           <v-card>
-            <v-card-title class="text-h5">
-              <v-icon size="40">
+            <v-card-title class="text-h4">
+              <v-icon size="50">
                 {{ icons.mdiAlertCircleOutline }}
               </v-icon>
-              Oops !
+              <span>Oops !</span>
             </v-card-title>
-
+            <v-spacer></v-spacer>
             <v-card-text>
               <ul>
-                <li v-for="(err, i) in errors" v-if="errors.length > 1" :key="i" class="py-3 text-center">
-                  {{ err[0] }}
-                </li>
-                <li v-if="errors.length == 1" class="py-3 text-center">
-                  {{ errors[0] }}
+                <li v-for="(err, i, idx) in errorsLog" :key="i" class="py-1 my-3 text-center d-flex text-center">
+                  <v-chip color="error" small>{{ idx + 1 }}</v-chip>
+                  <p class="m-0 px-3">{{ err[0] }}</p>
                 </li>
               </ul>
             </v-card-text>
@@ -318,9 +329,17 @@
     </v-row>
   </div>
 </template>
-
 <script>
-import { mdiArrowLeft, mdiArrowRight, mdiChevronLeft, mdiChevronRight, mdiClose, mdiPencil, mdiDelete } from '@mdi/js'
+import {
+  mdiArrowLeft,
+  mdiArrowRight,
+  mdiChevronLeft,
+  mdiChevronRight,
+  mdiAlertCircleOutline,
+  mdiClose,
+  mdiPencil,
+  mdiDelete,
+} from '@mdi/js'
 import axios from 'axios'
 import { required } from 'vuelidate/lib/validators'
 
@@ -329,9 +348,7 @@ export default {
     return {
       isLoading: false,
       dialog: false,
-      perPage: 5,
-      currentPage: 1,
-      errors: ['Something Went Wrong !'],
+      errorsLog: { err: ['Something Went Wrong !'] },
       errorDialog: false,
       successDialog: false,
       isError: false,
@@ -344,6 +361,7 @@ export default {
         mdiArrowRight,
         mdiChevronLeft,
         mdiChevronRight,
+        mdiAlertCircleOutline,
         mdiClose,
         mdiPencil,
         mdiDelete,
@@ -351,7 +369,10 @@ export default {
       company: {
         type: null,
       },
-      types: null,
+      total: 0,
+      items: [],
+      loading: true,
+      options: {},
       headers: [
         {
           text: 'ID',
@@ -361,21 +382,15 @@ export default {
         { text: 'Type', value: 'type' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      types: null,
     }
   },
-  computed: {
-    rows() {
-      return this.clients.length
-    },
-    Types() {
-      return this.types
-    },
-    formTitle() {
-      return this.editedIndex === -1 ? 'New Type' : 'Edit Type'
-    },
-  },
   watch: {
+    options: {
+      handler() {
+        this.getDataFromApi()
+      },
+      deep: true,
+    },
     dialog(val) {
       val || this.close()
     },
@@ -383,27 +398,43 @@ export default {
       val || this.closeDelete()
     },
   },
-  mounted() {
-    axios
-      .get('/company-types')
-      .then(res => {
-        this.types = res.data.response
-      })
-      .catch(error => {
-        this.isError = true
-      })
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? 'New Type' : 'Edit Type'
+    },
   },
   methods: {
+    getDataFromApi() {
+      this.loading = true
+      let self = this
+      const { page, itemsPerPage } = this.options
+      axios
+        .get('/company-types', { params: { page: page, per_page: itemsPerPage } })
+        .then(res => {
+          self.items = res.data.response.data
+          self.total = res.data.response.meta.total
+          self.loading = false
+        })
+        .catch(error => {
+          if (error.response.data.errors) {
+            this.errorsLog = error.response.data.errors
+          } else {
+            this.errorsLog = { err: ['Company Types can not load now !'] }
+          }
+          this.isError = true
+          this.errorDialog = true
+        })
+    },
     editItem(item) {
       this.editedIndex = item.id
-      this.arrIndex = this.types.indexOf(item)
-      this.company.type = this.types[this.arrIndex].type
+      this.arrIndex = this.items.indexOf(item)
+      this.client = this.items[this.arrIndex]
       this.dialog = true
     },
 
     deleteItem(item) {
       this.editedIndex = item.id
-      this.arrIndex = this.types.indexOf(item)
+      this.arrIndex = this.items.indexOf(item)
       this.dialogDelete = true
     },
 
@@ -412,16 +443,20 @@ export default {
       await axios
         .delete(`/company-types/${this.editedIndex}`)
         .then(res => {
-          this.types.splice(this.arrIndex, 1)
+          this.getDataFromApi()
           this.isDeleteing = false
         })
         .catch(error => {
-          console.log(error)
+          if (error.response.data.errors) {
+            this.errorsLog = error.response.data.errors
+          } else {
+            this.errorsLog = { err: ['Company Type can not deleted now !'] }
+          }
+          this.errorDialog = true
           this.isDeleteing = false
         })
       this.closeDelete()
     },
-
     close() {
       this.dialog = false
       this.$nextTick(() => {
@@ -429,7 +464,6 @@ export default {
         this.editedIndex = -1
       })
     },
-
     closeDelete() {
       this.dialogDelete = false
       this.$nextTick(() => {
@@ -437,7 +471,6 @@ export default {
         this.editedIndex = -1
       })
     },
-
     save() {
       if (this.editedIndex > -1) {
         // Object.assign(this.desserts[this.editedIndex], this.editedItem)
@@ -452,6 +485,9 @@ export default {
     validateStatus(validation) {
       return typeof validation != 'undefined' ? validation.$error : false
     },
+    reset() {
+      this.$refs.form.reset()
+    },
     async onSend() {
       this.$v.$touch()
       if (!this.$v.$invalid) {
@@ -459,18 +495,18 @@ export default {
         await axios
           .post('/company-types/store', this.company)
           .then(res => {
-            if (res.data.errors) {
-              this.errors = res.data.errors
-              this.errorDialog = true
-              this.isLoading = false
-            } else {
-              this.types.push(res.data.response)
-              this.close()
-              this.isLoading = false
-            }
+            this.getDataFromApi()
+            this.close()
+            this.isLoading = false
+            this.reset()
           })
           .catch(error => {
-            this.error = error.response
+            if (error.response.data.errors) {
+              this.errorsLog = error.response.data.errors
+            } else {
+              this.errorsLog = { err: ['Company Types can not send now !'] }
+            }
+            this.errorDialog = true
             this.isLoading = false
           })
       }
@@ -484,13 +520,18 @@ export default {
             type: this.company.type,
           })
           .then(() => {
-            this.types[this.arrIndex].type = this.company.type
+            this.getDataFromApi()
             this.isLoading = false
             this.close()
           })
           .catch(error => {
-            console.log(error)
+            if (error.response.data.errors) {
+              this.errorsLog = error.response.data.errors
+            } else {
+              this.errorsLog = { err: ['Company Types can not updated now !'] }
+            }
             this.isError = true
+            this.errorDialog = true
             this.isLoading = false
           })
       }

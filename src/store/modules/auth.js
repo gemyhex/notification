@@ -1,4 +1,7 @@
 import axios from 'axios'
+import {
+  vm
+} from '../../main'
 
 const state = {
   user: {},
@@ -15,47 +18,55 @@ const getters = {
   getState(state) {
     return state.login.loading
   },
-  getDialog() {
+  getDialog(state) {
     return state.login.dialoge
   },
+  getUser(state) {
+    return state.user
+  }
 }
 const actions = {
   async LogIn({
     state,
   }, User) {
-    if (User.email == '' || User.password == '') {
-      state.login.error = 'Check your email and password !'
+    state.login.loading = true
+    await axios.post('/login', {
+      email: User.email,
+      password: User.password,
+    }).then(res => {
+      if (res.data.response.token) {
+        state.login.loading = false
+        localStorage.setItem('token', res.data.response.token)
+        localStorage.setItem('userid', res.data.response.user.id)
+        localStorage.setItem('clientid', res.data.response.user.client_id)
+        window.location.replace('/')
+      } else {
+        state.login.loading = false
+        state.login.dialoge = true
+        state.login.error = 'Invalid Credentials !'
+      }
+    }).catch((error) => {
+      state.login.loading = false
       state.login.dialoge = true
-      console.log(state.login.dialoge)
-    } else {
-      state.login.loading = true
-      await axios.post('/login', {
-        email: User.email,
-        password: User.password,
-      }).then(res => {
-        console.log('login res => ', res)
-        if (res.data.response.token) {
-          state.login.loading = false
-          localStorage.setItem('token', res.data.response.token)
-          window.location.replace('/dashboard')
-        } else {
-          state.login.dialoge = true
-          state.login.error = 'Invalid Credentials !'
-          state.login.loading = false
-        }
-      })
-    }
+      state.login.error = 'Invalid Credentials !'
+    })
   },
   LogOut({}) {
     axios
       .post('/logout')
       .then(() => {
         localStorage.removeItem('token')
+        localStorage.removeItem('userid')
+        localStorage.removeItem('clientid')
         window.location.replace('/login')
+        state.user = {}
       })
       .catch(error => {
         localStorage.removeItem('token')
+        localStorage.removeItem('userid')
+        localStorage.removeItem('clientid')
         window.location.replace('/login')
+        state.user = {}
       })
   },
 }

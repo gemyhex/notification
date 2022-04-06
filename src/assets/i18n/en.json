@@ -1,0 +1,74 @@
+{
+    "Dashboard": "Dashboard",
+    "Clients": "Clients",
+    "Companies": "Companies",
+    "Document_Groups": "Document Groups",
+    "Company_Types": "Company Types",
+    "Employees": "Employees",
+    "Documents": "Documents",
+    "Employee_Documents": "Employee Documents",
+    "Roles": "Roles",
+    "headers": [{
+            "text": "Id",
+            "align": "start",
+            "sortable": false,
+            "value": "id"
+        },
+        {
+            "text": "Name",
+            "value": "name"
+        },
+        {
+            "text": "Phone",
+            "value": "phone"
+        },
+        {
+            "text": "Address",
+            "value": "address"
+        },
+        {
+            "text": "Actions",
+            "value": "actions",
+            "sortable": false
+        }
+    ],
+    "auths": {
+        "fullname": "The fullname field is required",
+        "phone": "The phone field is required",
+        "address": "The address field is required",
+        "password": "The password field is required",
+        "username": "The username field is required",
+        "email": "The email field is required",
+        "passLess": "You must have at least {pass} characters"
+    },
+    "forms": {
+        "fullname": "Fullname",
+        "phone": "Fhone",
+        "address": "Fddress",
+        "password": "Fassword",
+        "username": "Fsername",
+        "email": "Fmail"
+    },
+    "headings": {
+        "new_client": "New Client",
+        "edit_client": "Edit Client"
+    },
+    "btns": {
+        "save": "Save",
+        "saving": "Saving",
+        "cancel": "Cancel",
+        "ok": "Ok",
+        "deleting": "Deleting",
+        "login": "Login",
+        "forgot_password": "Forgot Password?",
+        "wait": "Please Wait",
+        "remember": "Remember Me?",
+        "register": "Create an account"
+    },
+    "msgs": {
+        "delete_confirm": "Are you sure you want to delete this item?",
+        "welcome": "Welcome to",
+        "signin": "Please sign-in to your account and start the adventure",
+        "new": "New on our platform?"
+    }
+}

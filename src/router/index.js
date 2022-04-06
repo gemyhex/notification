@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from "../store/index";
 
 Vue.use(VueRouter)
 
@@ -12,8 +13,9 @@ const routes = [{
     name: 'dashboard',
     component: () => import('@/views/dashboard/Dashboard.vue'),
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token') || ''
-      if (token !== '') {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
         next()
       } else {
         next({
@@ -23,12 +25,29 @@ const routes = [{
     },
   },
   {
-    path: '/users',
-    name: 'users',
-    component: () => import('@/views/pages/Users.vue'),
+    path: '/roles',
+    name: 'roles',
+    component: () => import('@/views/pages/Roles.vue'),
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token') || ''
-      if (token !== '') {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
+        next()
+      } else {
+        next({
+          name: 'login',
+        })
+      }
+    },
+  },
+  {
+    path: '/permissions',
+    name: 'permissions',
+    component: () => import('@/views/pages/Permissions.vue'),
+    beforeEnter: (to, from, next) => {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
         next()
       } else {
         next({
@@ -42,8 +61,9 @@ const routes = [{
     name: 'clients',
     component: () => import('@/views/pages/Clients.vue'),
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token') || ''
-      if (token !== '') {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
         next()
       } else {
         next({
@@ -57,8 +77,9 @@ const routes = [{
     name: 'doc-groups',
     component: () => import('@/views/pages/DocumentGroups.vue'),
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token') || ''
-      if (token !== '') {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
         next()
       } else {
         next({
@@ -72,8 +93,9 @@ const routes = [{
     name: 'companies',
     component: () => import('@/views/pages/Companies.vue'),
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token') || ''
-      if (token !== '') {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
         next()
       } else {
         next({
@@ -87,8 +109,9 @@ const routes = [{
     name: 'company_types',
     component: () => import('@/views/pages/CompanyTypes.vue'),
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token') || ''
-      if (token !== '') {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
         next()
       } else {
         next({
@@ -102,8 +125,9 @@ const routes = [{
     name: 'employees',
     component: () => import('@/views/pages/Employees.vue'),
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token') || ''
-      if (token !== '') {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
         next()
       } else {
         next({
@@ -117,8 +141,9 @@ const routes = [{
     name: 'documents',
     component: () => import('@/views/pages/Documents.vue'),
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token') || ''
-      if (token !== '') {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
         next()
       } else {
         next({
@@ -132,8 +157,9 @@ const routes = [{
     name: 'employeedocuments',
     component: () => import('@/views/pages/EmployeeDocuments.vue'),
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token') || ''
-      if (token !== '') {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
         next()
       } else {
         next({
@@ -143,42 +169,13 @@ const routes = [{
     },
   },
   {
-    path: '/typography',
-    name: 'typography',
-    component: () => import('@/views/typography/Typography.vue'),
-  },
-  {
-    path: '/icons',
-    name: 'icons',
-    component: () => import('@/views/icons/Icons.vue'),
-  },
-  {
-    path: '/cards',
-    name: 'cards',
-    component: () => import('@/views/cards/Card.vue'),
-  },
-  {
-    path: '/table',
-    name: 'simple-table',
-    component: () => import('@/views/simple-table/SimpleTable.vue'),
-  },
-  {
-    path: '/form',
-    name: 'form-layouts',
-    component: () => import('@/views/form-layouts/FormLayouts.vue'),
-  },
-  {
-    path: '/pages/account-settings',
-    name: 'pages-account-settings',
-    component: () => import('@/views/pages/account-settings/AccountSettings.vue'),
-  },
-  {
     path: '/login',
     name: 'login',
     component: () => import('@/views/pages/Login.vue'),
     beforeEnter: (to, from, next) => {
-      const token = localStorage.getItem('token')
-      if (!token) {
+      let user = store.state.user
+      // const token = localStorage.getItem('token')
+      if (user == null) {
         next()
       } else {
         next({
