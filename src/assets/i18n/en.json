@@ -8,7 +8,8 @@
     "Documents": "Documents",
     "Employee_Documents": "Employee Documents",
     "Roles": "Roles",
-    "headers": [{
+    "headers": [
+        {
             "text": "Id",
             "align": "start",
             "sortable": false,
@@ -27,37 +28,77 @@
             "value": "address"
         },
         {
+            "text": "Type",
+            "value": "type"
+        },
+        {
             "text": "Actions",
             "value": "actions",
             "sortable": false
         }
     ],
     "auths": {
-        "fullname": "The fullname field is required",
+        "fullname": "The name field is required",
         "phone": "The phone field is required",
         "address": "The address field is required",
         "password": "The password field is required",
         "username": "The username field is required",
         "email": "The email field is required",
-        "passLess": "You must have at least {pass} characters"
+        "type": "The type field is required",
+        "group": "The group field is required",
+        "passLess": "You must have at least {pass} characters",
+        "date": "The date field is required",
+        "document": "The document field is required",
+        "employee": "The employee field is required"
     },
     "forms": {
         "fullname": "Fullname",
-        "phone": "Fhone",
-        "address": "Fddress",
-        "password": "Fassword",
-        "username": "Fsername",
-        "email": "Fmail"
+        "phone": "Phone",
+        "address": "Adress",
+        "password": "Password",
+        "username": "Username",
+        "email": "Email",
+        "comp_name": "Comapny Name",
+        "comp_type": "Comapny Type",
+        "comp_types": "Comapny Types",
+        "type": "Select Type",
+        "grp_name": "Group Name",
+        "doc_name": "Document Name",
+        "doc_grp": "Document Group",
+        "sdoc_grp": "Select Document Group",
+        "date": "Date",
+        "yearly": "Yearly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "stype": "Type",
+        "document": "Document",
+        "employee": "Employee",
+        "semployee": "Select Employee"
     },
     "headings": {
         "new_client": "New Client",
-        "edit_client": "Edit Client"
+        "edit_client": "Edit Client",
+        "new_company": "New Company",
+        "edit_company": "Edit Company",
+        "new_company_type": "New Company Type",
+        "edit_company_type": "Edit Company Type",
+        "new_doc_grp": "New Doc Group",
+        "edit_doc_grp": "Edit Doc Group",
+        "new_document": "New Document",
+        "edit_document": "Edit Document",
+        "new_employee_doc": "New Employee Document",
+        "edit_employee_doc": "Edit Employee Document",
+        "new_": "New",
+        "edit_": "Edit",
+        "new_": "New",
+        "edit_": "Edit"
     },
     "btns": {
         "save": "Save",
         "saving": "Saving",
         "cancel": "Cancel",
         "ok": "Ok",
+        "close": "Close",
         "deleting": "Deleting",
         "login": "Login",
         "forgot_password": "Forgot Password?",
@@ -70,5 +111,16 @@
         "welcome": "Welcome to",
         "signin": "Please sign-in to your account and start the adventure",
         "new": "New on our platform?"
+    },
+    "errs": {
+        "laod": "Please sign out and try again !",
+        "wrong": "Something Went Wrong !",
+        "oops": "Oops",
+        "crud": {
+            "load": "{comp} can not load now, try again !",
+            "delete": "{comp} can not deleted now , try again !",
+            "save": "{comp} can not saved now , try again !",
+            "update": "{comp} can not updated now , try again !"
+        }
     }
 }

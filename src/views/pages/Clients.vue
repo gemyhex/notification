@@ -182,7 +182,7 @@
       <div class="alert alert-warning" role="alert" v-if="isError">
         <div class="alert-cont">
           <v-icon class="icon" @click="isError = !isError">{{ icons.mdiClose }}</v-icon>
-          <p>If the data didn't load yet , please sign out and try again !</p>
+          <p>{{ $t('errs.load') }}</p>
         </div>
       </div>
       <v-col class="liquid">
@@ -405,7 +405,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="error lighten-1" text @click="errorDialog = false"> Close </v-btn>
+              <v-btn color="error lighten-1" text @click="errorDialog = false"> {{ $t('btns.close') }} </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -433,7 +433,7 @@ export default {
       isLoading: false,
       isPasswordVisible: false,
       dialog: false,
-      errorsLog: { err: ['Something Went Wrong !'] },
+      errorsLog: { err: [this.$t('errs.wrong')] },
       errorDialog: false,
       successDialog: false,
       isError: false,
@@ -513,7 +513,7 @@ export default {
           if (error.response.data.errors) {
             this.errorsLog = error.response.data.errors
           } else {
-            this.errorsLog = { err: ['Clients can not load now !'] }
+            this.errorsLog = { err: [this.$t('errs.crud.load', { com: 'Clients' })] }
           }
           this.isError = true
           this.errorDialog = true
@@ -546,7 +546,7 @@ export default {
           if (error.response.data.errors) {
             this.errorsLog = error.response.data.errors
           } else {
-            this.errorsLog = { err: ['Client can not deleted now !'] }
+            this.errorsLog = { err: [this.$t('errs.crud.delete', { com: 'Clients' })] }
           }
           this.errorDialog = true
           this.isDeleteing = false
@@ -600,7 +600,7 @@ export default {
             if (error.response.data.errors) {
               this.errorsLog = error.response.data.errors
             } else {
-              this.errorsLog = { err: ['Client can not send now !'] }
+              this.errorsLog = { err: [this.$t('errs.crud.save', { com: 'Clients' })] }
             }
             this.errorDialog = true
             this.isLoading = false
@@ -624,7 +624,7 @@ export default {
           if (error.response.data.errors) {
             this.errorsLog = error.response.data.errors
           } else {
-            this.errorsLog = { err: ['client can not update now !'] }
+            this.errorsLog = { err: [this.$t('errs.crud.update', { com: 'Clients' })] }
           }
           this.isError = true
           this.isLoading = false

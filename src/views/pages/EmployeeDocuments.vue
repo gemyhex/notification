@@ -11,12 +11,14 @@
       >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Employee Documents</v-toolbar-title>
+            <v-toolbar-title>{{ $t('Employee_Documents') }}</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on"> New Emp Doc </v-btn>
+                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on">
+                  {{ $t('headings.new_employe') }}
+                </v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -29,23 +31,27 @@
                       <v-row>
                         <p>{{ errorDialog }}</p>
                         <v-col cols="12" md="6">
-                          <label id="lbl_inp" for="employee">Employee <span class="text-danger">*</span></label>
+                          <label id="lbl_inp" for="employee"
+                            >{{ $t('forms.employee') }} <span class="text-danger">*</span></label
+                          >
                           <select
                             id="employee"
                             v-model="$v.document.employee_id.$model"
                             :class="{ 'is-invalid': validateStatus($v.document.employee_id), 'form-select mt-3': true }"
                           >
-                            <option disabled selected>Select Employee</option>
+                            <option disabled selected>{{ $t('forms.semployee') }}</option>
                             <option v-for="emp in employees" :key="emp.id" :value="emp.id">
                               {{ emp.name }}
                             </option>
                           </select>
                           <div v-if="!$v.document.employee_id.required" class="invalid-feedback">
-                            The employee field is required.
+                            {{ $t('auths.employee') }}
                           </div>
                         </v-col>
                         <v-col cols="12" md="6">
-                          <label id="lbl_inp" for="document">Document <span class="text-danger">*</span></label>
+                          <label id="lbl_inp" for="document"
+                            >{{ $t('forms.documet') }} <span class="text-danger">*</span></label
+                          >
                           <v-select
                             :items="documentsNames"
                             :menu-props="{ maxHeight: '400' }"
@@ -65,34 +71,38 @@
                             </option>
                           </select> -->
                           <div v-if="!$v.document.document_id.required" class="invalid-feedback">
-                            The document field is required.
+                            {{ $t('auths.document') }}
                           </div>
                         </v-col>
                         <v-col cols="12" md="6">
-                          <label id="lbl_inp" for="document_name">Type <span class="text-danger">*</span></label>
+                          <label id="lbl_inp" for="document_name"
+                            >{{ $t('forms.stype') }} <span class="text-danger">*</span></label
+                          >
                           <select
                             id="type"
                             v-model="$v.document.type.$model"
                             :class="{ 'is-invalid': validateStatus($v.document.type), 'form-select mt-3': true }"
                           >
-                            <option disabled selected>Select Type</option>
-                            <option value="year">Yearly</option>
-                            <option value="month">Monthly</option>
-                            <option value="quarter">Quarterly</option>
+                            <option disabled selected>{{ $t('forms.type') }}</option>
+                            <option value="year">{{ $t('forms.yearly') }}</option>
+                            <option value="month">{{ $t('forms.monthly') }}</option>
+                            <option value="quarter">{{ $t('forms.quarterly') }}</option>
                           </select>
                           <div v-if="!$v.document.type.required" class="invalid-feedback">
-                            The type field is required.
+                            {{ $t('auths.type') }}
                           </div>
                         </v-col>
                         <v-col cols="12" md="6">
-                          <label id="lbl_inp" for="date">Date <span class="text-danger">*</span></label>
+                          <label id="lbl_inp" for="date"
+                            >{{ $t('forms.date') }} <span class="text-danger">*</span></label
+                          >
                           <input
                             v-model="$v.document.due_date.$model"
                             type="date"
                             :class="{ 'is-invalid': validateStatus($v.document.due_date), 'form-select mt-3': true }"
                           />
                           <div v-if="!$v.document.due_date.required" class="invalid-feedback">
-                            The due date field is required.
+                            {{ $t('auths.date') }}
                           </div>
                         </v-col>
                       </v-row>
@@ -102,12 +112,14 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="error" @click="close"> Cancel </v-btn>
-                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading"> Save </v-btn>
+                  <v-btn color="error" @click="close"> {{ $t('btns.cancel') }} </v-btn>
+                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading">
+                    {{ $t('btns.save') }}
+                  </v-btn>
                   <v-btn v-else type="submit" color="success">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Saving...
+                      {{ $t('btns.saving') }}...
                     </button>
                   </v-btn>
                 </v-card-actions>
@@ -134,7 +146,7 @@
       <div class="alert alert-warning" role="alert" v-if="isError">
         <div class="alert-cont">
           <v-icon class="icon" @click="isError = !isError">{{ icons.mdiClose }}</v-icon>
-          <p>If the data didn't load yet , please sign out and try again !</p>
+          <p>{{ $t('errs.load') }}!</p>
         </div>
       </div>
       <v-col class="liquid">
@@ -343,7 +355,7 @@
               <v-icon size="50">
                 {{ icons.mdiAlertCircleOutline }}
               </v-icon>
-              <span>Oops !</span>
+              <span>{{ $t('errs.oops') }} !</span>
             </v-card-title>
             <v-spacer></v-spacer>
             <v-card-text>
@@ -357,7 +369,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="error lighten-1" text @click="errorDialog = false"> Close </v-btn>
+              <v-btn color="error lighten-1" text @click="errorDialog = false"> {{ $t('btns.close') }} </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -450,7 +462,7 @@ export default {
         if (error.response.data.errors) {
           this.errorsLog = error.response.data.errors
         } else {
-          this.errorsLog = { err: ['Employees can not load now !'] }
+          this.errorsLog = { err: [this.$t('errs.crud.load', { comp: 'Employees' })] }
         }
         this.errorDialog = true
       })
@@ -466,7 +478,7 @@ export default {
         if (error.response.data.errors) {
           this.errorsLog = error.response.data.errors
         } else {
-          this.errorsLog = { err: ['Documents can not load now !'] }
+          this.errorsLog = { err: [this.$t('errs.crud.load', { comp: 'Documents' })] }
         }
 
         this.errorDialog = true
@@ -485,7 +497,7 @@ export default {
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Emp Doc' : 'Edit Emp Doc'
+      return this.editedIndex === -1 ? this.$t('headings.new_employee_doc') : this.$t('headings.edit_employee_doc')
     },
   },
   methods: {
@@ -504,7 +516,7 @@ export default {
           if (error.response.data.errors) {
             this.errorsLog = error.response.data.errors
           } else {
-            this.errorsLog = { err: ['Data can not load now !'] }
+            this.errorsLog = { err: [this.$t('errs.crud.load', { comp: 'Employee Documents' })] }
           }
           this.errorDialog = true
           this.isError = true
@@ -559,7 +571,7 @@ export default {
             if (error.response.data.errors) {
               this.errorsLog = error.response.data.errors
             } else {
-              this.errorsLog = { err: ['Documents can not send now !'] }
+              this.errorsLog = { err: [this.$t('errs.crud.save', { comp: 'Employee Documents' })] }
             }
             this.errorDialog = true
             this.isLoading = false

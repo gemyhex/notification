@@ -11,12 +11,14 @@
       >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Company Types</v-toolbar-title>
+            <v-toolbar-title>{{ $t('forms.comp_types') }}</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on"> New Company Type </v-btn>
+                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on">
+                  {{ $t('headings.new_company_type') }}
+                </v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -28,18 +30,20 @@
                     <v-form @submit.prevent="onSend" ref="form">
                       <v-row>
                         <v-col cols="12" md="6">
-                          <label id="lbl_inp" for="group">Company Type <span class="text-danger">*</span></label>
+                          <label id="lbl_inp" for="group"
+                            >{{ $t('forms.comp_type') }} <span class="text-danger">*</span></label
+                          >
                           <v-text-field
                             id="company_type"
                             v-model="$v.company.type.$model"
                             outlined
                             dense
-                            placeholder="Comapny Type"
+                            :placeholder="$t('forms.comp_type')"
                             hide-details
                             :class="{ 'is-invalid': validateStatus($v.company.type), 'mt-3': true }"
                           ></v-text-field>
                           <div v-if="!$v.company.type.required" class="invalid-feedback">
-                            The company type field is required.
+                            {{ $t('auths.type') }}
                           </div>
                         </v-col>
                       </v-row>
@@ -49,12 +53,14 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="error" @click="close"> Cancel </v-btn>
-                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading"> Save </v-btn>
+                  <v-btn color="error" @click="close"> {{ $t('btns.cancel') }} </v-btn>
+                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading">
+                    {{ $t('btns.save') }}
+                  </v-btn>
                   <v-btn v-else type="submit" color="success">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Saving...
+                      {{ $t('btns.saving') }}...
                     </button>
                   </v-btn>
                 </v-card-actions>
@@ -62,15 +68,17 @@
             </v-dialog>
             <v-dialog v-model="dialogDelete" max-width="500px">
               <v-card>
-                <v-card-title class="text-h6">Are you sure you want to delete this item?</v-card-title>
+                <v-card-title class="text-h6">{{ $t('msgs.delete_confirm') }}</v-card-title>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="error" @click="closeDelete">Cancel</v-btn>
-                  <v-btn color="success" @click="deleteItemConfirm($event)" v-if="!isDeleteing">OK</v-btn>
+                  <v-btn color="error" @click="closeDelete">{{ $t('btns.cancel') }}</v-btn>
+                  <v-btn color="success" @click="deleteItemConfirm($event)" v-if="!isDeleteing">{{
+                    $t('btns.ok')
+                  }}</v-btn>
                   <v-btn v-else type="submit" color="error">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Deleteing...
+                      {{ $t('btns.deleting') }}...
                     </button>
                   </v-btn>
                   <v-spacer></v-spacer>
@@ -98,7 +106,7 @@
       <div class="alert alert-warning" role="alert" v-if="isError">
         <div class="alert-cont">
           <v-icon class="icon" @click="isError = !isError">{{ icons.mdiClose }}</v-icon>
-          <p>If the data didn't load yet , please sign out and try again !</p>
+          <p>{{ $t('errs.load') }}</p>
         </div>
       </div>
       <v-col class="liquid">
@@ -307,7 +315,7 @@
               <v-icon size="50">
                 {{ icons.mdiAlertCircleOutline }}
               </v-icon>
-              <span>Oops !</span>
+              <span>{{ $t('errs.oops') }} !</span>
             </v-card-title>
             <v-spacer></v-spacer>
             <v-card-text>
@@ -321,7 +329,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="error lighten-1" text @click="errorDialog = false"> Close </v-btn>
+              <v-btn color="error lighten-1" text @click="errorDialog = false"> {{ $t('btns.close') }} </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -400,7 +408,7 @@ export default {
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Type' : 'Edit Type'
+      return this.editedIndex === -1 ? this.$t('headings.new_company_type') : this.$t('headings.edit_company_type')
     },
   },
   methods: {
@@ -419,7 +427,7 @@ export default {
           if (error.response.data.errors) {
             this.errorsLog = error.response.data.errors
           } else {
-            this.errorsLog = { err: ['Company Types can not load now !'] }
+            this.errorsLog = { err: [this.$t('errs.crud.load', { comp: 'Company Type' })] }
           }
           this.isError = true
           this.errorDialog = true
@@ -450,7 +458,7 @@ export default {
           if (error.response.data.errors) {
             this.errorsLog = error.response.data.errors
           } else {
-            this.errorsLog = { err: ['Company Type can not deleted now !'] }
+            this.errorsLog = { err: [this.$t('errs.crud.delete', { comp: 'Company Type' })] }
           }
           this.errorDialog = true
           this.isDeleteing = false
@@ -504,7 +512,7 @@ export default {
             if (error.response.data.errors) {
               this.errorsLog = error.response.data.errors
             } else {
-              this.errorsLog = { err: ['Company Types can not send now !'] }
+              this.errorsLog = { err: [this.$t('errs.crud.save', { comp: 'Company Type' })] }
             }
             this.errorDialog = true
             this.isLoading = false
@@ -528,7 +536,7 @@ export default {
             if (error.response.data.errors) {
               this.errorsLog = error.response.data.errors
             } else {
-              this.errorsLog = { err: ['Company Types can not updated now !'] }
+              this.errorsLog = { err: [this.$t('errs.crud.update', { comp: 'Company Type' })] }
             }
             this.isError = true
             this.errorDialog = true

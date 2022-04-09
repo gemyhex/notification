@@ -11,12 +11,14 @@
       >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Documents</v-toolbar-title>
+            <v-toolbar-title>{{ $t('Documents') }}</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on"> New Document </v-btn>
+                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on">
+                  {{ $t('headings.new_document') }}
+                </v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -28,7 +30,9 @@
                     <v-form @submit.prevent="onSend" ref="form">
                       <v-row>
                         <v-col cols="12" md="6">
-                          <label id="lbl_inp" for="group">Document Group <span class="text-danger">*</span></label>
+                          <label id="lbl_inp" for="group"
+                            >{{ $t('forms.doc_grp') }} <span class="text-danger">*</span></label
+                          >
                           <select
                             id="group"
                             v-model="$v.document.document_group_id.$model"
@@ -37,28 +41,30 @@
                               'form-select mt-3': true,
                             }"
                           >
-                            <option disabled selected>Select Document Group</option>
+                            <option disabled selected>{{ $t('forms.sdoc_name') }}</option>
                             <option v-for="group in groups" :key="group.id" :value="group.id">
                               {{ group.name }}
                             </option>
                           </select>
                           <div v-if="!$v.document.document_group_id.required" class="invalid-feedback">
-                            The document group field is required.
+                            {{ $t('auths.group') }}.
                           </div>
                         </v-col>
                         <v-col cols="12" md="6">
-                          <label id="lbl_inp" for="document_name">Name <span class="text-danger">*</span></label>
+                          <label id="lbl_inp" for="document_name"
+                            >{{ $t('forms.doc_name') }} <span class="text-danger">*</span></label
+                          >
                           <v-text-field
                             id="document_name"
                             v-model="$v.document.name.$model"
                             outlined
                             dense
-                            placeholder="Document Name"
+                            :placeholder="$t('forms.doc_name')"
                             hide-details
                             :class="{ 'is-invalid': validateStatus($v.document.name), 'mt-3': true }"
                           ></v-text-field>
                           <div v-if="!$v.document.name.required" class="invalid-feedback">
-                            The document name field is required.
+                            {{ $t('auths.fullname') }}.
                           </div>
                         </v-col>
                       </v-row>
@@ -68,12 +74,14 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="error" @click="close"> Cancel </v-btn>
-                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading"> Save </v-btn>
+                  <v-btn color="error" @click="close"> {{ $t('btns.cancel') }} </v-btn>
+                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading">
+                    {{ $t('btns.save') }}
+                  </v-btn>
                   <v-btn v-else type="submit" color="success">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Saving...
+                      {{ $t('btns.saving') }}...
                     </button>
                   </v-btn>
                 </v-card-actions>
@@ -81,15 +89,17 @@
             </v-dialog>
             <v-dialog v-model="dialogDelete" max-width="500px">
               <v-card>
-                <v-card-title class="text-h6">Are you sure you want to delete this item?</v-card-title>
+                <v-card-title class="text-h6">{{ $t('msgs.delete_confirm') }}</v-card-title>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="error" @click="closeDelete">Cancel</v-btn>
-                  <v-btn color="success" @click="deleteItemConfirm($event)" v-if="!isDeleteing">OK</v-btn>
+                  <v-btn color="error" @click="closeDelete">{{ $t('btns.cancel') }}</v-btn>
+                  <v-btn color="success" @click="deleteItemConfirm($event)" v-if="!isDeleteing">{{
+                    $t('btns.ok')
+                  }}</v-btn>
                   <v-btn v-else type="submit" color="error">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Deleteing...
+                      {{ $t('btns.deleting') }}...
                     </button>
                   </v-btn>
                   <v-spacer></v-spacer>
@@ -117,7 +127,7 @@
       <div class="alert alert-warning" role="alert" v-if="isError">
         <div class="alert-cont">
           <v-icon class="icon" @click="isError = !isError">{{ icons.mdiClose }}</v-icon>
-          <p>If the data didn't load yet , please sign out and try again !</p>
+          <p>{{ $t('errs.load') }}</p>
         </div>
       </div>
       <v-col class="liquid">
@@ -326,7 +336,7 @@
               <v-icon size="50">
                 {{ icons.mdiAlertCircleOutline }}
               </v-icon>
-              <span>Oops !</span>
+              <span>{{ $t('errs.oops') }} !</span>
             </v-card-title>
             <v-spacer></v-spacer>
             <v-card-text>
@@ -340,7 +350,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="error lighten-1" text @click="errorDialog = false"> Close </v-btn>
+              <v-btn color="error lighten-1" text @click="errorDialog = false"> {{ $t('btns.close') }} </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -367,7 +377,7 @@ export default {
     return {
       isLoading: false,
       dialog: false,
-      errorsLog: { err: ['Something Went Wrong !'] },
+      errorsLog: { err: [this.$t('errs.wrong')] },
       errorDialog: false,
       successDialog: false,
       isError: false,
@@ -421,7 +431,7 @@ export default {
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Document' : 'Edit Document'
+      return this.editedIndex === -1 ? this.$t('headings.new_document') : this.$t('headings.edit_document')
     },
   },
   mounted() {
@@ -434,7 +444,7 @@ export default {
         if (error.response.data.errors) {
           this.errorsLog = error.response.data.errors
         } else {
-          this.errorsLog = { err: ['Document Groups can not load now !'] }
+          this.errorsLog = { err: [this.$t('errs.crud.load', { comp: 'Document Groups' })] }
         }
         this.errorDialog = true
       })
@@ -456,7 +466,7 @@ export default {
           if (error.response.data.errors) {
             this.errorsLog = error.response.data.errors
           } else {
-            this.errorsLog = { err: ['Documents can not load now !'] }
+            this.errorsLog = { err: [this.$t('errs.crud.load', { comp: 'Documents' })] }
           }
           this.errorDialog = true
         })
@@ -486,7 +496,7 @@ export default {
           if (error.response.data.errors) {
             this.errorsLog = error.response.data.errors
           } else {
-            this.errorsLog = { err: ['Document can not deleted now !'] }
+            this.errorsLog = { err: [this.$t('errs.crud.delete', { comp: 'Documents' })] }
           }
           this.errorDialog = true
           this.isDeleteing = false
@@ -540,7 +550,7 @@ export default {
             if (error.response.data.errors) {
               this.errorsLog = error.response.data.errors
             } else {
-              this.errorsLog = { err: ['Document can not send now !'] }
+              this.errorsLog = { err: [this.$t('errs.crud.save', { comp: 'Documents' })] }
             }
             this.errorDialog = true
             this.isLoading = false
@@ -565,7 +575,7 @@ export default {
             if (error.response.data.errors) {
               this.errorsLog = error.response.data.errors
             } else {
-              this.errorsLog = { err: ['Document can not updated now !'] }
+              this.errorsLog = { err: [this.$t('errs.crud.update', { comp: 'Documents' })] }
             }
             this.errorDialog = true
             this.isError = true
