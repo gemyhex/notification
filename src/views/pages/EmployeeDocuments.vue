@@ -2,7 +2,7 @@
   <div>
     <div v-if="items">
       <v-data-table
-        :headers="headers"
+        :headers="$t('hEmpDocs')"
         :items="items"
         :options.sync="options"
         :server-items-length="total"
@@ -17,7 +17,7 @@
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on">
-                  {{ $t('headings.new_employe') }}
+                  {{ $t('headings.new_employee_doc') }}
                 </v-btn>
               </template>
               <v-card>
@@ -50,7 +50,7 @@
                         </v-col>
                         <v-col cols="12" md="6">
                           <label id="lbl_inp" for="document"
-                            >{{ $t('forms.documet') }} <span class="text-danger">*</span></label
+                            >{{ $t('forms.document') }} <span class="text-danger">*</span></label
                           >
                           <v-select
                             :items="documentsNames"
@@ -427,7 +427,7 @@ export default {
       employees: null,
       documents: null,
       documentsNames: [],
-      headers: [
+      hEmpDocs: [
         {
           text: 'ID',
           align: 'start',

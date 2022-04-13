@@ -2,7 +2,7 @@
   <div>
     <div v-if="items">
       <v-data-table
-        :headers="headers"
+        :headers="$t('hDocuments')"
         :items="items"
         :options.sync="options"
         :server-items-length="total"
@@ -404,7 +404,7 @@ export default {
       items: [],
       loading: true,
       options: {},
-      headers: [
+      hDocuments: [
         {
           text: 'ID',
           align: 'start',

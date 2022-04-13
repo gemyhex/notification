@@ -14,7 +14,7 @@
               class="me-3"
             ></v-img>
 
-            <h2 class="text-2xl font-weight-semibold">Dashboard</h2>
+            <h2 class="text-2xl font-weight-semibold">{{ $t('Dashboard') }}</h2>
           </router-link>
         </v-card-title>
 
@@ -25,64 +25,64 @@
               <v-col cols="12" md="6">
                 <v-row>
                   <v-col>
-                    <label id="lbl_inp" for="group">Name <span class="text-danger">*</span></label>
+                    <label id="lbl_inp" for="group">{{ $t('forms.name') }} <span class="text-danger">*</span></label>
                     <v-text-field
                       v-model="$v.user.name.$model"
                       outlined
-                      placeholder="Name"
+                      :placeholder="$t('forms.name')"
                       hide-details
                       :class="{ 'is-invalid': validateStatus($v.user.name), 'mt-3': true }"
                     ></v-text-field>
-                    <div v-if="!$v.user.name.required" class="invalid-feedback">The name field is required.</div>
+                    <div v-if="!$v.user.name.required" class="invalid-feedback">{{ $t('auths.fullname') }}.</div>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <label id="lbl_inp" for="group">Phone <span class="text-danger">*</span></label>
+                    <label id="lbl_inp" for="group">{{ $t('forms.phone') }} <span class="text-danger">*</span></label>
                     <v-text-field
                       type="number"
                       v-model="$v.user.phone.$model"
                       outlined
-                      placeholder="Phone"
+                      :placeholder="$t('forms.phone')"
                       hide-details
                       :class="{ 'is-invalid': validateStatus($v.user.phone), 'mt-3': true }"
                     ></v-text-field>
-                    <div v-if="!$v.user.phone.required" class="invalid-feedback">The phone field is required.</div>
+                    <div v-if="!$v.user.phone.required" class="invalid-feedback">{{ $t('auths.phone') }}.</div>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <label id="lbl_inp" for="group">Address <span class="text-danger">*</span></label>
+                    <label id="lbl_inp" for="group">{{ $t('forms.address') }} <span class="text-danger">*</span></label>
                     <v-text-field
                       v-model="$v.user.address.$model"
                       outlined
-                      placeholder="address"
+                      :placeholder="$t('forms.address')"
                       hide-details
                       :class="{ 'is-invalid': validateStatus($v.user.address), 'mt-3': true }"
                     ></v-text-field>
-                    <div v-if="!$v.user.address.required" class="invalid-feedback">The address field is required.</div>
+                    <div v-if="!$v.user.address.required" class="invalid-feedback">{{ $t('auths.address') }}.</div>
                   </v-col>
                 </v-row>
               </v-col>
               <v-col cols="12" md="6">
                 <v-row>
                   <v-col>
-                    <label id="lbl_inp" for="group">Username <span class="text-danger">*</span></label>
+                    <label id="lbl_inp" for="group"
+                      >{{ $t('forms.username') }} <span class="text-danger">*</span></label
+                    >
                     <v-text-field
                       v-model="$v.user.username.$model"
                       outlined
-                      placeholder="Username"
+                      :placeholder="$t('forms.username')"
                       hide-details
                       :class="{ 'is-invalid': validateStatus($v.user.username), 'mt-3': true }"
                     ></v-text-field>
-                    <div v-if="!$v.user.username.required" class="invalid-feedback">
-                      The username field is required.
-                    </div>
+                    <div v-if="!$v.user.username.required" class="invalid-feedback">{{ $t('auths.username') }}.</div>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <label id="lbl_inp" for="group">Email <span class="text-danger">*</span></label>
+                    <label id="lbl_inp" for="group">{{ $t('forms.email') }} <span class="text-danger">*</span></label>
                     <v-text-field
                       v-model="$v.user.email.$model"
                       outlined
@@ -90,12 +90,14 @@
                       hide-details
                       :class="{ 'is-invalid': validateStatus($v.user.email), 'mt-3': true }"
                     ></v-text-field>
-                    <div v-if="!$v.user.email.required" class="invalid-feedback">The email field is required.</div>
+                    <div v-if="!$v.user.email.required" class="invalid-feedback">{{ $t('auths.email') }}.</div>
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col>
-                    <label id="lbl_inp" for="group">Password <span class="text-danger">*</span></label>
+                    <label id="lbl_inp" for="group"
+                      >{{ $t('forms.password') }} <span class="text-danger">*</span></label
+                    >
                     <v-text-field
                       v-model="$v.user.password.$model"
                       outlined
@@ -106,11 +108,9 @@
                       @click:append="isPasswordVisible = !isPasswordVisible"
                       :class="{ 'is-invalid': validateStatus($v.user.password), 'mt-3': true }"
                     ></v-text-field>
-                    <div v-if="!$v.user.password.required" class="invalid-feedback">
-                      The password field is required.
-                    </div>
+                    <div v-if="!$v.user.password.required" class="invalid-feedback">{{ $t('auths.password') }}.</div>
                     <div v-if="!$v.user.password.minLength" class="invalid-feedback">
-                      You must have at least {{ $v.user.password.$params.minLength.min }} characters.
+                      {{ $t('auths.passLess', { pass: $v.user.password.$params.minLength.min }) }}
                     </div>
                   </v-col>
                 </v-row>
@@ -122,18 +122,19 @@
                 <v-checkbox hide-details class="mt-1">
                   <template #label>
                     <div class="d-flex align-center flex-wrap">
-                      <span class="me-2">I agree to</span><a href="javascript:void(0)">privacy policy &amp; terms</a>
+                      <span class="me-2">{{ $t('msgs.agree') }}</span
+                      ><a href="javascript:void(0)">{{ $t('msgs.privacy') }}</a>
                     </div>
                   </template>
                 </v-checkbox>
               </v-col>
             </v-row>
 
-            <v-btn v-if="!isLoading" type="submit" block color="primary" class="mt-6"> Signup </v-btn>
+            <v-btn v-if="!isLoading" type="submit" block color="primary" class="mt-6"> {{ $t('btns.signup') }} </v-btn>
             <v-btn v-else type="submit" block color="primary" class="mt-6">
               <button class="btn" type="button" disabled>
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                Please Wait...
+                {{ $t('btns.wait') }}...
               </button>
             </v-btn>
           </v-form>
@@ -146,7 +147,7 @@
                   <v-icon size="50">
                     {{ icons.mdiAlertCircleOutline }}
                   </v-icon>
-                  <span>Oops !</span>
+                  <span>{{ $t('errs.oops') }} !</span>
                 </v-card-title>
                 <v-spacer></v-spacer>
                 <v-card-text>
@@ -160,7 +161,7 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="error lighten-1" text @click="errorDialog = false"> Close </v-btn>
+                  <v-btn color="error lighten-1" text @click="errorDialog = false"> {{ $t('btns.close') }} </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -168,8 +169,8 @@
         </v-row>
         <!-- create new account  -->
         <v-card-text class="d-flex align-center justify-center flex-wrap mt-2">
-          <span class="me-2"> Already have an account? </span>
-          <router-link :to="{ name: 'login' }"> Sign in instead </router-link>
+          <span class="me-2"> {{ $t('msgs.have_acc') }} </span>
+          <router-link :to="{ name: 'login' }"> {{ $t('msgs.sign') }} </router-link>
         </v-card-text>
       </v-card>
     </div>

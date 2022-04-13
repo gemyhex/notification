@@ -17,8 +17,8 @@ import App from './App.vue'
 import i18n from './i18n'
 
 const lang = localStorage.getItem('lang') || 'en'
-axios.defaults.baseURL = 'http://localhost/notification/public/api/'
-// axios.defaults.baseURL = 'https://notif-back.smarttechno.co/api/'
+// axios.defaults.baseURL = 'http://localhost/notification/public/api/'
+axios.defaults.baseURL = 'https://notif-back.smarttechno.co/api/'
 axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`
 axios.defaults.headers['Accept-Language'] = lang
 document.documentElement.lang = lang

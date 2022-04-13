@@ -2,7 +2,7 @@
   <div>
     <div v-if="roles">
       <v-data-table
-        :headers="headers"
+        :headers="$t('hRoles')"
         :items="roles"
         :options.sync="options"
         :server-items-length="total"
@@ -11,12 +11,12 @@
       >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Roles</v-toolbar-title>
+            <v-toolbar-title>{{ $t('Roles') }}</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on"> New Role </v-btn>
+                <v-btn color="success" dark class="mb-2" v-bind="attrs" v-on="on"> {{ $t('headings.new_role') }}</v-btn>
               </template>
               <v-card>
                 <v-card-title>
@@ -28,17 +28,18 @@
                     <v-form @submit.prevent ref="form">
                       <v-row>
                         <v-col cols="12" md="6">
+                          <label for="name">{{ $t('forms.name') }} <span class="text-danger">*</span></label>
                           <v-text-field
                             id="name"
                             v-model.trim="$v.role.name.$model"
                             outlined
                             dense
-                            placeholder="name"
+                            :placeholder="$t('forms.name')"
                             hide-details
                             aria-required="true"
-                            :class="{ 'is-invalid': validateStatus($v.role.name) }"
+                            :class="{ 'is-invalid': validateStatus($v.role.name), 'mt-3': true }"
                           ></v-text-field>
-                          <div v-if="!$v.role.name.required" class="invalid-feedback">The name field is required.</div>
+                          <div v-if="!$v.role.name.required" class="invalid-feedback">{{ $t('auths.fullname') }}.</div>
                         </v-col>
                       </v-row>
                     </v-form>
@@ -47,12 +48,14 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="error" @click="closeAdd"> Cancel </v-btn>
-                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading"> Save </v-btn>
+                  <v-btn color="error" @click="closeAdd"> {{ $t('btns.cancel') }}</v-btn>
+                  <v-btn color="success" type="submit" @click.stop="save" v-if="!isLoading">
+                    {{ $t('btns.save') }}
+                  </v-btn>
                   <v-btn v-else type="submit" color="success">
                     <button type="button" disabled>
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Saving...
+                      {{ $t('btns.savingF') }}...
                     </button>
                   </v-btn>
                 </v-card-actions>
@@ -76,7 +79,7 @@
       <div class="alert alert-warning" role="alert" v-if="isError">
         <div class="alert-cont">
           <v-icon class="icon" @click="isError = !isError">{{ icons.mdiClose }}</v-icon>
-          <p>If the data didn't load yet , please sign out and try again !</p>
+          <p>{{ $t('errs.load') }}</p>
         </div>
       </div>
       <v-col class="liquid">
@@ -285,7 +288,7 @@
               <v-icon size="50">
                 {{ icons.mdiAlertCircleOutline }}
               </v-icon>
-              <span>Oops !</span>
+              <span>{{ $t('errs.oops') }} !</span>
             </v-card-title>
             <v-spacer></v-spacer>
             <v-card-text>
@@ -299,7 +302,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="error lighten-1" text @click="errorDialog = false"> Close </v-btn>
+              <v-btn color="error lighten-1" text @click="errorDialog = false"> {{ $t('btns.close') }} </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -311,7 +314,7 @@
         <v-dialog v-model="permissionDialog" max-width="500px">
           <v-card>
             <v-card-title>
-              <span class="text-h5">Assign Permissions</span>
+              <span class="text-h5">{{ $t('forms.assign') }}</span>
             </v-card-title>
 
             <v-card-text>
@@ -326,15 +329,14 @@
                         </option>
                       </select>
                     </v-col> -->
-                    <label for="name">Role Name <span class="text-danger">*</span></label>
+                    <label for="name">{{ $t('forms.name') }} <span class="text-danger">*</span></label>
                     <v-col>
                       <v-select
                         v-model="permissions.permissions"
                         :items="permissionsListNames"
                         :menu-props="{ maxHeight: '400' }"
-                        label="Select Permissions"
+                        :label="$t('forms.sPerm')"
                         multiple
-                        hint="Pick your permissions"
                         persistent-hint
                       ></v-select>
                     </v-col>
@@ -345,12 +347,14 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="error" @click="close"> Cancel </v-btn>
-              <v-btn color="success" type="submit" @click.stop="onSendPermission" v-if="!isLoading"> Save </v-btn>
+              <v-btn color="error" @click="close"> {{ $t('btns.cancel') }} </v-btn>
+              <v-btn color="success" type="submit" @click.stop="onSendPermission" v-if="!isLoading">
+                {{ $t('btns.save') }}
+              </v-btn>
               <v-btn v-else type="submit" color="success">
                 <button type="button" disabled>
                   <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  Saving...
+                  {{ $t('btns.saving') }}...
                 </button>
               </v-btn>
             </v-card-actions>
@@ -411,7 +415,7 @@ export default {
       permissionsListNames: [],
       loading: true,
       options: {},
-      headers: [
+      hRoles: [
         {
           text: 'Id',
           align: 'start',
@@ -436,7 +440,7 @@ export default {
   },
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Role' : 'Edit Role'
+      return this.editedIndex === -1 ? this.$t('headings.new_role') : this.$t('headings.edit_role')
     },
   },
   mounted() {
@@ -452,7 +456,7 @@ export default {
         if (error.response.data.errors) {
           this.errorsLog = error.response.data.errors
         } else {
-          this.errorsLog = { err: ['Permissions can not load now !'] }
+          this.errorsLog = { err: [this.$t('errs.crud.load', { comp: 'Permissions' })] }
         }
         this.errorDialog = true
       })
@@ -473,7 +477,7 @@ export default {
           if (error.response.data.errors) {
             this.errorsLog = error.response.data.errors
           } else {
-            this.errorsLog = { err: ['Roles can not load now !'] }
+            this.errorsLog = { err: [this.$t('errs.crud.load', { comp: 'Roles' })] }
           }
           this.isError = true
           this.errorDialog = true
@@ -522,7 +526,7 @@ export default {
             if (error.response.data.errors) {
               this.errorsLog = error.response.data.errors
             } else {
-              this.errorsLog = { err: ['Role can not saved now !'] }
+              this.errorsLog = { err: [this.$t('errs.crud.save', { comp: 'Roles' })] }
             }
             this.errorDialog = true
             this.isLoading = false
@@ -542,7 +546,7 @@ export default {
           if (error.response.data.errors) {
             this.errorsLog = error.response.data.errors
           } else {
-            this.errorsLog = { err: ['Permission can not assigned now !'] }
+            this.errorsLog = { err: [this.$t('errs.crud.assign', { comp: 'Permissions' })] }
           }
           this.errorDialog = true
           this.isLoading = false

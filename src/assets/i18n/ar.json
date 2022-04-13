@@ -5,11 +5,130 @@
     "Document_Groups": "مجموعات الوثائق",
     "Company_Types": "أنواع الشركات",
     "Employees": "الموظفين",
+    "Employee": "الموظف",
     "Documents": "الوثائق",
     "Employee_Documents": "وثائق الموظفين",
     "Roles": "الاوذونات",
-    "headers": [
+    "hRoles": [{
+            "text": "التسلسل",
+            "align": "start",
+            "value": "id"
+        },
         {
+            "text": "الاسم",
+            "value": "name"
+        },
+        {
+            "text": "الصلاحيات",
+            "value": "actions"
+        }
+    ],
+    "hEmployees": [{
+            "text": "التسلسل",
+            "align": "start",
+            "value": "id"
+        },
+        {
+            "text": "الاسم",
+            "value": "name"
+        },
+        {
+            "text": "اسم الشركة",
+            "value": "company.name"
+        },
+        {
+            "text": "العمليات",
+            "value": "actions"
+        }
+    ],
+    "hEmpDocs": [{
+            "text": "التسلسل",
+            "align": "start",
+            "value": "id"
+        },
+        {
+            "text": "اسم الموظف",
+            "value": "employee"
+        },
+        {
+            "text": "اسم المستند",
+            "value": "document"
+        },
+        {
+            "text": "التاريخ",
+            "value": "due_date"
+        },
+        {
+            "text": "النوع",
+            "value": "type"
+        }
+    ],
+    "hDocuments": [{
+            "text": "التسلسل",
+            "align": "start",
+            "value": "id"
+        },
+        {
+            "text": "الاسم",
+            "value": "name"
+        },
+        {
+            "text": "العمليات",
+            "value": "actions",
+            "sortable": false
+        }
+    ],
+    "hDocGroup": [{
+            "text": "التسلسل",
+            "align": "start",
+            "value": "id"
+        },
+        {
+            "text": "الاسم",
+            "value": "name"
+        },
+        {
+            "text": "العمليات",
+            "value": "actions",
+            "sortable": false
+        }
+    ],
+    "hCompTypes": [{
+            "text": "التسلسل",
+            "align": "start",
+            "value": "id"
+        },
+        {
+            "text": "النوع",
+            "value": "type"
+        },
+        {
+            "text": "العمليات",
+            "value": "actions",
+            "sortable": false
+        }
+    ],
+    "hCompanies": [{
+            "text": "التسلسل",
+            "align": "start",
+            "sortable": false,
+            "value": "id"
+        },
+        {
+            "text": "الاسم",
+            "value": "name"
+        },
+        {
+            "text": "نوع الشركة",
+            "value": "company_type.type"
+        },
+        {
+            "text": "العمليات",
+            "value": "actions",
+            "sortable": false
+        }
+    ],
+    "hClients": [{
             "text": "التسلسل",
             "align": "start",
             "sortable": false,
@@ -22,10 +141,6 @@
         {
             "text": "رقم الهاتف",
             "value": "phone"
-        },
-        {
-            "text": "النوع",
-            "value": "type"
         },
         {
             "text": "العنوان",
@@ -45,7 +160,12 @@
         "username": "حقل اسم المستخدم مطلوب",
         "email": "حقل البريد الالكتروني مطلوب",
         "type": "حقل النوع مطلوب",
-        "passLess": "يجب ان يحتوي علي الاقل علي {pass} حروف"
+        "group": "حقل المجموعة مطلوب",
+        "passLess": "يجب ان يحتوي علي الاقل علي {pass} حروف",
+        "date": "حقل التاريخ مطلوب",
+        "document": "حقل المستند مطلوب",
+        "employee": "حقل الموظف مطلوب",
+        "company": "حقل الشركة مطلوب"
     },
     "forms": {
         "fullname": "الاسم بالكامل",
@@ -56,8 +176,25 @@
         "email": " البريد الالكتروني",
         "comp_name": "اسم الشركة",
         "comp_type": "نوع الشركة",
-        "comp_types":"أنواع الشركات",
-        "type": "اختار نوع"
+        "comp_types": "أنواع الشركات",
+        "type": "اختر نوع",
+        "grp_name": "اسم المجموعة",
+        "doc_name": "اسم المستند",
+        "doc_grp": "مجموعة المستند",
+        "sdoc_grp": "اختار مجموعة المستند",
+        "date": "التاريخ",
+        "yearly": "سنوي",
+        "monthly": "شهري",
+        "quarterly": "3 شهور",
+        "stype": "النوع",
+        "document": "المستند",
+        "employee": "الموظف",
+        "semployee": "اختر الموظف",
+        "company": "الشركة",
+        "scompany": "اختر شركة",
+        "name": "الاسم",
+        "assign": "تعيين آذونات",
+        "sPerm": "اختر آذونات"
     },
     "headings": {
         "new_client": "اضافة عميل جديد",
@@ -66,44 +203,63 @@
         "edit_company": "تعديل بيانات شركة",
         "new_company_type": "اضافة نوع شركة",
         "edit_company_type": "تعديل بيانات نوع شركة",
-        "new_": "اضافة",
-        "edit_": "تعديل بيانات",
-        "new_": "اضافة",
-        "edit_": "تعديل بيانات",
-        "new_": "اضافة",
-        "edit_": "تعديل بيانات",
-        "new_": "اضافة",
-        "edit_": "تعديل بيانات",
-        "new_": "اضافة",
-        "edit_": "تعديل بيانات"
+        "new_doc_grp": "اضافة مجموعة ملفات",
+        "edit_doc_grp": "تعديل بيانات مجموعة ملفات",
+        "new_document": "اضافة مستند",
+        "edit_document": "تعديل بيانات مستند",
+        "new_employee_doc": "اضافة مستندات موظف",
+        "edit_employee_doc": "تعديل بيانات ملفات موظف",
+        "new_employee": "اضافة موظف",
+        "edit_employee": "تعديل بيانات موظف",
+        "new_role": "اضافة صلاحية",
+        "edit_role": "تعديل بيانات صلاحية"
     },
     "btns": {
         "save": "حفظ",
         "saving": "جاري الحفظ",
         "cancel": "الغاء",
+        "close": "إغلاق",
         "ok": "حسنا",
         "deleting": "جاري الحذف",
         "login": "تسجيل الدخول",
         "forgot_password": "نسيت كلمة السر؟",
         "wait": "يرجي الانتظار",
         "remember": "تذكرني؟",
-        "register": "إنشاء حساب جديد"
+        "register": "إنشاء حساب جديد",
+        "signup": "إنشاء حساب جديد"
     },
     "msgs": {
         "delete_confirm": "هل انت متاكد من حذف هذا العنصر ؟",
         "welcome": "مرحبا بك في",
         "signin": "سجل الدخول لحسابك و ابدأ المغامرة",
-        "new": "جديد في عالمنا؟"
+        "new": "جديد في عالمنا؟",
+        "agree": "أوافق علي",
+        "privacy": "سياسة الخصوصية والشروط",
+        "have_acc": "تمتلك حساب بالفعل؟",
+        "sign": "سجل دخولك"
     },
     "errs": {
         "laod": "يرجي اعادة تسجيل الدخول و لتحديث البيانات",
         "wrong": "حدث خطأ ما , يرجي تسجيل الدخول مجددا",
         "oops": "عفواٌ",
         "crud": {
-            "load": "لا يمكن عرض بيانات {comp} الان , يرجي المحاولة لاحقا!",
-            "delete": "لا يمكن حذف بيانات {comp} الان , يرجي المحاولة لاحقا!",
-            "save": "لا يمكن حفظ بيانات {comp} الان , يرجي المحاولة لاحقا!",
-            "update": "لا يمكن تعديل بيانات {comp} الان , يرجي المحاولة لاحقا!"
+            "load": "لا يمكن عرض بيانات {ملف} الان , يرجي المحاولة لاحقا!",
+            "delete": "لا يمكن حذف بيانات {ملف} الان , يرجي المحاولة لاحقا!",
+            "save": "لا يمكن حفظ بيانات {ملف} الان , يرجي المحاولة لاحقا!",
+            "update": "لا يمكن تعديل بيانات {ملف} الان , يرجي المحاولة لاحقا!",
+            "assign": "لا يمكن تعيين آذونات الان , يرجي المحاولة لاحقا !"
         }
-    }
+    },
+    "dataFooter": {
+        "nextPage": "الصفحة التالية",
+        "prevPage": "الصفحة السابقة",
+        "itemsPerPageAll": "{total}"
+    },
+    "dataTable": {
+        "itemsPerPageText": "عدد عناصر الصفحة"
+    },
+    "dataIterator": {
+        "loadingText": "جاري تحميل العناصر ..."
+    },
+    "noDataText": "لا توجد عناصر"
 }

@@ -2,7 +2,7 @@
   <div>
     <div v-if="items">
       <v-data-table
-        :headers="$t('headers')"
+        :headers="$t('hClients')"
         :items="items"
         :options.sync="options"
         :server-items-length="total"
@@ -80,33 +80,33 @@
                         <v-col cols="12" md="6" v-if="!isEditing">
                           <label id="lbl_inp">{{ $t('forms.password') }} <span class="text-danger">*</span></label>
                           <v-text-field
-                            v-model="$v.user.password.$model"
+                            v-model="$v.client.password.$model"
                             outlined
                             :type="isPasswordVisible ? 'text' : 'password'"
                             placeholder="············"
                             :append-icon="isPasswordVisible ? icons.mdiEyeOffOutline : icons.mdiEyeOutline"
                             hide-details
                             @click:append="isPasswordVisible = !isPasswordVisible"
-                            :class="{ 'is-invalid': validateStatus($v.user.email), 'mt-3': true }"
+                            :class="{ 'is-invalid': validateStatus($v.client.password), 'mt-3': true }"
                           ></v-text-field>
-                          <div v-if="!$v.user.password.required" class="invalid-feedback">
+                          <div v-if="!$v.client.password.required" class="invalid-feedback">
                             {{ $t('auths.password') }}.
                           </div>
-                          <div v-if="!$v.user.password.minLength" class="invalid-feedback">
-                            {{ $t('auths.passLess', { pass: $v.user.password.$params.minLength.min }) }}.
+                          <div v-if="!$v.client.password.minLength" class="invalid-feedback">
+                            {{ $t('auths.passLess', { pass: $v.client.password.$params.minLength.min }) }}.
                           </div>
                         </v-col>
 
                         <v-col cols="12" md="6" v-if="!isEditing">
                           <label id="lbl_inp">{{ $t('forms.username') }} <span class="text-danger">*</span></label>
                           <v-text-field
-                            v-model="$v.user.username.$model"
+                            v-model="$v.client.username.$model"
                             outlined
                             placeholder="Username"
                             hide-details
-                            :class="{ 'is-invalid': validateStatus($v.user.username), 'mt-3': true }"
+                            :class="{ 'is-invalid': validateStatus($v.client.username), 'mt-3': true }"
                           ></v-text-field>
-                          <div v-if="!$v.user.username.required" class="invalid-feedback">
+                          <div v-if="!$v.client.username.required" class="invalid-feedback">
                             {{ $t('auths.username') }}.
                           </div>
                         </v-col>
@@ -114,13 +114,13 @@
                         <v-col cols="12" md="6" v-if="!isEditing">
                           <label id="lbl_inp">{{ $t('forms.email') }} <span class="text-danger">*</span></label>
                           <v-text-field
-                            v-model="$v.user.email.$model"
+                            v-model="$v.client.email.$model"
                             outlined
                             placeholder="john@example.com"
                             hide-details
-                            :class="{ 'is-invalid': validateStatus($v.user.email), 'mt-3': true }"
+                            :class="{ 'is-invalid': validateStatus($v.client.email), 'mt-3': true }"
                           ></v-text-field>
-                          <div v-if="!$v.user.email.required" class="invalid-feedback">{{ $t('auths.email') }}.</div>
+                          <div v-if="!$v.client.email.required" class="invalid-feedback">{{ $t('auths.email') }}.</div>
                         </v-col>
                       </v-row>
                     </v-form>
@@ -465,7 +465,7 @@ export default {
       items: [],
       loading: true,
       options: {},
-      headers: [
+      hClients: [
         {
           text: 'Id',
           align: 'start',
@@ -637,8 +637,6 @@ export default {
       name: { required },
       phone: { required },
       address: { required },
-    },
-    user: {
       email: { required, email },
       password: { required, minLength: minLength(8) },
       username: { required },

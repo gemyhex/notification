@@ -2,7 +2,7 @@
   <div>
     <div v-if="items">
       <v-data-table
-        :headers="headers"
+        :headers="$t('hCompanies')"
         :items="items"
         :options.sync="options"
         :server-items-length="total"
@@ -47,7 +47,7 @@
                             </option>
                           </select>
                           <div v-if="!$v.company.company_type_id.required" class="invalid-feedback">
-                            {{ this.$t('auths.type') }}
+                            {{ $t('auths.type') }}
                           </div>
                         </v-col>
                         <v-col cols="12" md="6">
@@ -59,7 +59,7 @@
                             v-model.trim="$v.company.name.$model"
                             outlined
                             dense
-                            :placeholder="this.$t('forms.comp_name')"
+                            :placeholder="$t('forms.comp_name')"
                             hide-details
                             :class="{ 'is-invalid': validateStatus($v.company.name), 'mt-3': true }"
                           ></v-text-field>
@@ -350,7 +350,7 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="error lighten-1" text @click="errorDialog = false"> {{$t('btns.close')}} </v-btn>
+              <v-btn color="error lighten-1" text @click="errorDialog = false"> {{ $t('btns.close') }} </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -406,7 +406,7 @@ export default {
       items: [],
       loading: true,
       options: {},
-      headers: [
+      hCompanies: [
         {
           text: 'Id',
           align: 'start',

@@ -1,16 +1,16 @@
 <template>
   <div>
-    <v-icon>{{ icons.mdiWebBox }}</v-icon>
-    <!-- <v-icon @click="handleChange">{{ isAr == true ? icons.mdiAbjadArabic : icons.mdiAlphaE }}</v-icon> -->
-    <select name="langs" id="langSwitch" class="custom-select" v-model="lang" @change="handlerChange($event)">
-      <option value="en">En</option>
-      <option value="ar">ع</option>
-    </select>
+    <!-- <v-icon>{{ icons.mdiWebBox }}</v-icon> -->
+    <v-icon @click="handleChange" size="26">{{ lang == 'ar' ? icons.mdiWeb : icons.mdiWeb }}</v-icon>
+    <!-- <select name="langs" id="langSwitch" class="custom-select" v-model="lang" @change="handlerChange($event)">
+      <option value="en" selected>English</option>
+      <option value="ar">عربي</option>
+    </select> -->
   </div>
 </template>
 
 <script>
-import { mdiWebBox, mdiAbjadArabic, mdiAlphaE } from '@mdi/js'
+import { mdiWeb, mdiAbjadArabic, mdiAlphaEBox, mdiTranslate } from '@mdi/js'
 export default {
   data() {
     const lang = localStorage.getItem('lang') || 'en'
@@ -19,9 +19,10 @@ export default {
       lang,
       isAr: false,
       icons: {
-        mdiWebBox,
+        mdiWeb,
         mdiAbjadArabic,
-        mdiAlphaE,
+        mdiAlphaEBox,
+        mdiTranslate,
       },
     }
   },
@@ -29,11 +30,11 @@ export default {
     handleChange() {
       if (this.lang == 'en') {
         localStorage.setItem('lang', 'ar')
-        localStorage.removeItem('rtl')
+        localStorage.setItem('rtl', true)
         this.isAr = true
       } else {
         localStorage.setItem('lang', 'en')
-        localStorage.setItem('rtl', true)
+        localStorage.removeItem('rtl')
         this.isAr = false
       }
       window.location.reload()

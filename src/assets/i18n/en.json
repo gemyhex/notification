@@ -5,11 +5,130 @@
     "Document_Groups": "Document Groups",
     "Company_Types": "Company Types",
     "Employees": "Employees",
+    "Employee": "Employee",
     "Documents": "Documents",
     "Employee_Documents": "Employee Documents",
     "Roles": "Roles",
-    "headers": [
+    "hRoles": [{
+            "text": "Id",
+            "align": "start",
+            "value": "id"
+        },
         {
+            "text": "Name",
+            "value": "name"
+        },
+        {
+            "text": "Permissions",
+            "value": "actions"
+        }
+    ],
+    "hEmployees": [{
+            "text": "Id",
+            "align": "start",
+            "value": "id"
+        },
+        {
+            "text": "Name",
+            "value": "name"
+        },
+        {
+            "text": "Company",
+            "value": "company.name"
+        },
+        {
+            "text": "Actions",
+            "value": "actions"
+        }
+    ],
+    "hEmpDocs": [{
+            "text": "Id",
+            "align": "start",
+            "value": "id"
+        },
+        {
+            "text": "Employee",
+            "value": "employee"
+        },
+        {
+            "text": "Document",
+            "value": "document"
+        },
+        {
+            "text": "Date",
+            "value": "due_date"
+        },
+        {
+            "text": "Type",
+            "value": "type"
+        }
+    ],
+    "hDocuments": [{
+            "text": "ID",
+            "align": "start",
+            "value": "id"
+        },
+        {
+            "text": "Name",
+            "value": "name"
+        },
+        {
+            "text": "Actions",
+            "value": "actions",
+            "sortable": false
+        }
+    ],
+    "hDocGroup": [{
+            "text": "ID",
+            "align": "start",
+            "value": "id"
+        },
+        {
+            "text": "Name",
+            "value": "name"
+        },
+        {
+            "text": "Actions",
+            "value": "actions",
+            "sortable": false
+        }
+    ],
+    "hCompTypes": [{
+            "text": "ID",
+            "align": "start",
+            "value": "id"
+        },
+        {
+            "text": "Type",
+            "value": "type"
+        },
+        {
+            "text": "Actions",
+            "value": "actions",
+            "sortable": false
+        }
+    ],
+    "hCompanies": [{
+            "text": "Id",
+            "align": "start",
+            "sortable": false,
+            "value": "id"
+        },
+        {
+            "text": "Name",
+            "value": "name"
+        },
+        {
+            "text": "Type",
+            "value": "company_type.type"
+        },
+        {
+            "text": "Actions",
+            "value": "actions",
+            "sortable": false
+        }
+    ],
+    "hClients": [{
             "text": "Id",
             "align": "start",
             "sortable": false,
@@ -26,10 +145,6 @@
         {
             "text": "Address",
             "value": "address"
-        },
-        {
-            "text": "Type",
-            "value": "type"
         },
         {
             "text": "Actions",
@@ -49,7 +164,8 @@
         "passLess": "You must have at least {pass} characters",
         "date": "The date field is required",
         "document": "The document field is required",
-        "employee": "The employee field is required"
+        "employee": "The employee field is required",
+        "company": "The company field is required"
     },
     "forms": {
         "fullname": "Fullname",
@@ -73,7 +189,12 @@
         "stype": "Type",
         "document": "Document",
         "employee": "Employee",
-        "semployee": "Select Employee"
+        "semployee": "Select Employee",
+        "company": "Company",
+        "scompany": "Select Company",
+        "name": "Name",
+        "assign": "Assign Permissions",
+        "sPerm": "Select Permissions"
     },
     "headings": {
         "new_client": "New Client",
@@ -88,10 +209,10 @@
         "edit_document": "Edit Document",
         "new_employee_doc": "New Employee Document",
         "edit_employee_doc": "Edit Employee Document",
-        "new_": "New",
-        "edit_": "Edit",
-        "new_": "New",
-        "edit_": "Edit"
+        "new_employee": "New Employee",
+        "edit_employee": "Edit Employee",
+        "new_role": "New Role",
+        "edit_role": "Edit Role"
     },
     "btns": {
         "save": "Save",
@@ -104,13 +225,18 @@
         "forgot_password": "Forgot Password?",
         "wait": "Please Wait",
         "remember": "Remember Me?",
-        "register": "Create an account"
+        "register": "Create an account",
+        "signup": "Signup"
     },
     "msgs": {
         "delete_confirm": "Are you sure you want to delete this item?",
         "welcome": "Welcome to",
         "signin": "Please sign-in to your account and start the adventure",
-        "new": "New on our platform?"
+        "new": "New on our platform?",
+        "agree": "I agree to",
+        "privcy": "privacy policy & terms",
+        "have_acc": "Already have an account?",
+        "sign": "Sign in"
     },
     "errs": {
         "laod": "Please sign out and try again !",
@@ -120,7 +246,20 @@
             "load": "{comp} can not load now, try again !",
             "delete": "{comp} can not deleted now , try again !",
             "save": "{comp} can not saved now , try again !",
-            "update": "{comp} can not updated now , try again !"
+            "update": "{comp} can not updated now , try again !",
+            "assign": "{comp} can not assigned now !"
         }
-    }
+    },
+    "dataFooter": {
+        "nextPage": "Next Page",
+        "prevPage": "Prev Page",
+        "itemsPerPageAll": "{total}"
+    },
+    "dataTable": {
+        "itemsPerPageText": "Items Per Page"
+    },
+    "dataIterator": {
+        "loadingText": "Loading Items ..."
+    },
+    "noDataText": "No Data Available"
 }
