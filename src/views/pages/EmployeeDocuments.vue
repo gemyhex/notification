@@ -396,7 +396,7 @@ export default {
     return {
       isLoading: false,
       dialog: false,
-      errorsLog: { err: ['Something Went Wrong !'] },
+      errorsLog: { err: [this.$t('errs.wrong')] },
       errorDialog: false,
       successDialog: false,
       isError: false,

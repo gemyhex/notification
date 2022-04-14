@@ -72,6 +72,9 @@
           <v-chip small color="success" class="mr-2" @click="selectedItem(item)">
             <v-icon small> {{ icons.mdiPlusBox }} </v-icon>
           </v-chip>
+          <v-chip small color="primary" class="mr-2" @click="selectedRole(item)">
+            <v-icon small> {{ icons.mdiAccountCheckOutline }} </v-icon>
+          </v-chip>
         </template>
       </v-data-table>
     </div>
@@ -362,6 +365,65 @@
         </v-dialog>
       </v-col>
     </v-row>
+
+    <v-row>
+      <v-col>
+        <v-dialog v-model="roleDialog" max-width="500px">
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">{{ $t('forms.assignUser') }}</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container>
+                <v-form @submit.prevent ref="form">
+                  <v-row>
+                    <label for="name">{{ $t('forms.user') }} <span class="text-danger">*</span></label>
+                    <v-col>
+                      <select
+                        id="client"
+                        v-model="role_id.role_id"
+                        class="form-select mt-3"
+                        @change="handleChange($event)"
+                      >
+                        <option disabled selected>{{ $t('forms.suser') }}</option>
+                        <option v-for="user in usersList" :key="user.id" :value="user.id">
+                          {{ user.name }}
+                        </option>
+                      </select>
+                    </v-col>
+                    <!-- <v-col>
+                      <v-select
+                        v-model="permissions.permissions"
+                        :items="permissionsListNames"
+                        :menu-props="{ maxHeight: '400' }"
+                        :label="$t('forms.sPerm')"
+                        multiple
+                        persistent-hint
+                      ></v-select>
+                    </v-col> -->
+                  </v-row>
+                </v-form>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="error" @click="closeRole"> {{ $t('btns.cancel') }} </v-btn>
+              <v-btn color="success" type="submit" @click.stop="onAssignRole" v-if="!isLoading">
+                {{ $t('btns.save') }}
+              </v-btn>
+              <v-btn v-else type="submit" color="success">
+                <button type="button" disabled>
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  {{ $t('btns.saving') }}...
+                </button>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-col>
+    </v-row>
   </div>
 </template>
 <script>
@@ -375,6 +437,7 @@ import {
   mdiPencil,
   mdiDelete,
   mdiPlusBox,
+  mdiAccountCheckOutline,
 } from '@mdi/js'
 import axios from 'axios'
 import { required } from 'vuelidate/lib/validators'
@@ -384,9 +447,10 @@ export default {
     return {
       isLoading: false,
       dialog: false,
-      errorsLog: { err: ['Something Went Wrong !'] },
+      errorsLog: { err: [this.$t('errs.wrong')] },
       errorDialog: false,
       permissionDialog: false,
+      roleDialog: false,
       isError: false,
       editedIndex: -1,
       deletedIndex: -1,
@@ -402,6 +466,7 @@ export default {
         mdiPencil,
         mdiDelete,
         mdiPlusBox,
+        mdiAccountCheckOutline,
       },
       role: {
         name: null,
@@ -413,6 +478,11 @@ export default {
       },
       permissionsList: [],
       permissionsListNames: [],
+      usersList: [],
+      userId: null,
+      role_id: {
+        role_id: null,
+      },
       loading: true,
       options: {},
       hRoles: [
@@ -460,6 +530,19 @@ export default {
         }
         this.errorDialog = true
       })
+    axios
+      .get('/clients')
+      .then(res => {
+        this.usersList = res.data.response.data
+      })
+      .catch(error => {
+        if (error.response.data.errors) {
+          this.errorsLog = error.response.data.errors
+        } else {
+          this.errorsLog = { err: [this.$t('errs.crud.load', { comp: 'Users' })] }
+        }
+        this.errorDialog = true
+      })
   },
   methods: {
     getDataFromApi() {
@@ -483,6 +566,15 @@ export default {
           this.errorDialog = true
         })
     },
+    handleChange(val) {
+      this.userId = val.target.value
+    },
+    closeRole() {
+      this.roleDialog = false
+      this.$nextTick(() => {
+        this.editedIndex = -1
+      })
+    },
     close() {
       this.permissionDialog = false
       this.$nextTick(() => {
@@ -503,6 +595,11 @@ export default {
     selectedItem(item) {
       this.permissionDialog = true
       this.editedIndex = item.id
+    },
+    selectedRole(item) {
+      this.roleDialog = true
+      this.role_id.role_id = item.id
+      console.log(item)
     },
     validateStatus(validation) {
       return typeof validation != 'undefined' ? validation.$error : false
@@ -547,6 +644,25 @@ export default {
             this.errorsLog = error.response.data.errors
           } else {
             this.errorsLog = { err: [this.$t('errs.crud.assign', { comp: 'Permissions' })] }
+          }
+          this.errorDialog = true
+          this.isLoading = false
+        })
+    },
+    async onAssignRole() {
+      this.isLoading = true
+      await axios
+        .post(`/assign-roles/${this.userId}`, this.role_id)
+        .then(res => {
+          this.reset()
+          this.closeRole()
+          this.isLoading = false
+        })
+        .catch(error => {
+          if (error.response.data.errors) {
+            this.errorsLog = error.response.data.errors
+          } else {
+            this.errorsLog = { err: [this.$t('errs.crud.assign', { comp: 'Roles' })] }
           }
           this.errorDialog = true
           this.isLoading = false

@@ -9,7 +9,8 @@
     "Documents": "Documents",
     "Employee_Documents": "Employee Documents",
     "Roles": "Roles",
-    "hRoles": [{
+    "hRoles": [
+        {
             "text": "Id",
             "align": "start",
             "value": "id"
@@ -23,7 +24,8 @@
             "value": "actions"
         }
     ],
-    "hEmployees": [{
+    "hEmployees": [
+        {
             "text": "Id",
             "align": "start",
             "value": "id"
@@ -41,7 +43,8 @@
             "value": "actions"
         }
     ],
-    "hEmpDocs": [{
+    "hEmpDocs": [
+        {
             "text": "Id",
             "align": "start",
             "value": "id"
@@ -63,7 +66,8 @@
             "value": "type"
         }
     ],
-    "hDocuments": [{
+    "hDocuments": [
+        {
             "text": "ID",
             "align": "start",
             "value": "id"
@@ -78,7 +82,8 @@
             "sortable": false
         }
     ],
-    "hDocGroup": [{
+    "hDocGroup": [
+        {
             "text": "ID",
             "align": "start",
             "value": "id"
@@ -93,7 +98,8 @@
             "sortable": false
         }
     ],
-    "hCompTypes": [{
+    "hCompTypes": [
+        {
             "text": "ID",
             "align": "start",
             "value": "id"
@@ -108,7 +114,8 @@
             "sortable": false
         }
     ],
-    "hCompanies": [{
+    "hCompanies": [
+        {
             "text": "Id",
             "align": "start",
             "sortable": false,
@@ -128,7 +135,8 @@
             "sortable": false
         }
     ],
-    "hClients": [{
+    "hClients": [
+        {
             "text": "Id",
             "align": "start",
             "sortable": false,
@@ -194,7 +202,10 @@
         "scompany": "Select Company",
         "name": "Name",
         "assign": "Assign Permissions",
-        "sPerm": "Select Permissions"
+        "sPerm": "Select Permissions",
+        "assignUser": "Assign Role",
+        "suser": "Select User",
+        "user": "User"
     },
     "headings": {
         "new_client": "New Client",

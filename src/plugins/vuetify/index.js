@@ -20,7 +20,7 @@ export default new Vuetify({
     current: localStorage.getItem('lang'),
   },
   theme: {
-    dark: true,
+    dark: localStorage.getItem('dark'),
     options: {
       customProperties: true,
       variations: false,

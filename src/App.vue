@@ -27,10 +27,12 @@ export default {
       return 'layout-content'
     })
     const lang = localStorage.getItem('lang') || 'en'
+    const dark = localStorage.getItem('dark') || true
 
     return {
       resolveLayout,
       lang,
+      dark,
     }
   },
 }

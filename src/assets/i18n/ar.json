@@ -9,7 +9,8 @@
     "Documents": "الوثائق",
     "Employee_Documents": "وثائق الموظفين",
     "Roles": "الاوذونات",
-    "hRoles": [{
+    "hRoles": [
+        {
             "text": "التسلسل",
             "align": "start",
             "value": "id"
@@ -23,7 +24,8 @@
             "value": "actions"
         }
     ],
-    "hEmployees": [{
+    "hEmployees": [
+        {
             "text": "التسلسل",
             "align": "start",
             "value": "id"
@@ -41,7 +43,8 @@
             "value": "actions"
         }
     ],
-    "hEmpDocs": [{
+    "hEmpDocs": [
+        {
             "text": "التسلسل",
             "align": "start",
             "value": "id"
@@ -63,7 +66,8 @@
             "value": "type"
         }
     ],
-    "hDocuments": [{
+    "hDocuments": [
+        {
             "text": "التسلسل",
             "align": "start",
             "value": "id"
@@ -78,7 +82,8 @@
             "sortable": false
         }
     ],
-    "hDocGroup": [{
+    "hDocGroup": [
+        {
             "text": "التسلسل",
             "align": "start",
             "value": "id"
@@ -93,7 +98,8 @@
             "sortable": false
         }
     ],
-    "hCompTypes": [{
+    "hCompTypes": [
+        {
             "text": "التسلسل",
             "align": "start",
             "value": "id"
@@ -108,7 +114,8 @@
             "sortable": false
         }
     ],
-    "hCompanies": [{
+    "hCompanies": [
+        {
             "text": "التسلسل",
             "align": "start",
             "sortable": false,
@@ -128,7 +135,8 @@
             "sortable": false
         }
     ],
-    "hClients": [{
+    "hClients": [
+        {
             "text": "التسلسل",
             "align": "start",
             "sortable": false,
@@ -194,7 +202,10 @@
         "scompany": "اختر شركة",
         "name": "الاسم",
         "assign": "تعيين آذونات",
-        "sPerm": "اختر آذونات"
+        "sPerm": "اختر آذونات",
+        "assignUser": "تعيين صلاحية",
+        "suser": "اختر المستخدم",
+        "user": "المستخدم"
     },
     "headings": {
         "new_client": "اضافة عميل جديد",
