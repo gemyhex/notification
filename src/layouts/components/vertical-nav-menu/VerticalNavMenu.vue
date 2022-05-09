@@ -78,12 +78,7 @@
         :to="{ name: 'employeedocuments' }"
         :icon="icons.mdiFolderAccountOutline"
       ></nav-menu-link>
-      <nav-menu-link
-        :title="$t('Roles')"
-        v-show="client_id == '0'"
-        :to="{ name: 'roles' }"
-        :icon="icons.mdiFolderAccountOutline"
-      ></nav-menu-link>
+      <nav-menu-link :title="$t('Roles')" :to="{ name: 'roles' }" :icon="icons.mdiFolderAccountOutline"></nav-menu-link>
     </v-list>
   </v-navigation-drawer>
 </template>

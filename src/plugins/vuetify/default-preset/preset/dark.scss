@@ -8,6 +8,7 @@
         &.v-sheet.theme--dark {
           &:not([class*='--text']) {
             color: #fff !important;
+
             svg {
               color: #fff !important;
             }
@@ -33,6 +34,7 @@
 // ————————————————————————————————————
 
 .v-application.theme--dark {
+
   .ps__rail-y,
   .ps__rail-x {
     background-color: transparent !important;
@@ -40,5 +42,9 @@
 
   .ps__thumb-y {
     background-color: map-deep-get($material-dark, 'cards');
+  }
+
+  .arr-wrap .content span {
+    color: #fff !important;
   }
 }

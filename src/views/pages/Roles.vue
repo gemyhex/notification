@@ -380,15 +380,10 @@
                   <v-row>
                     <label for="name">{{ $t('forms.user') }} <span class="text-danger">*</span></label>
                     <v-col>
-                      <select
-                        id="client"
-                        v-model="role_id.role_id"
-                        class="form-select mt-3"
-                        @change="handleChange($event)"
-                      >
+                      <select id="client" class="form-select mt-3" @change="handleChange($event)">
                         <option disabled selected>{{ $t('forms.suser') }}</option>
                         <option v-for="user in usersList" :key="user.id" :value="user.id">
-                          {{ user.name }}
+                          {{ user.username }}
                         </option>
                       </select>
                     </v-col>
@@ -531,9 +526,10 @@ export default {
         this.errorDialog = true
       })
     axios
-      .get('/clients')
+      .get('/users')
       .then(res => {
         this.usersList = res.data.response.data
+        console.log('users: ', res.data.response.data)
       })
       .catch(error => {
         if (error.response.data.errors) {
@@ -599,7 +595,7 @@ export default {
     selectedRole(item) {
       this.roleDialog = true
       this.role_id.role_id = item.id
-      console.log(item)
+      console.log('role id: ', item.id)
     },
     validateStatus(validation) {
       return typeof validation != 'undefined' ? validation.$error : false

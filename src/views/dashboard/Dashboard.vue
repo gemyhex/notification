@@ -1,9 +1,9 @@
 <template>
   <div>
     <v-row>
-      <ul>
-        <li v-for="(perm, ind) in permissions" :key="ind">{{ perm }}</li>
-      </ul>
+      <v-col>
+        <Timeline></Timeline>
+      </v-col>
     </v-row>
     <v-row>
       <v-col cols="12" md="4">
@@ -93,6 +93,8 @@ import DashboardCardDepositAndWithdraw from './DashboardCardDepositAndWithdraw.v
 import DashboardCardSalesByCountries from './DashboardCardSalesByCountries.vue'
 import DashboardWeeklyOverview from './DashboardWeeklyOverview.vue'
 import DashboardDatatable from './DashboardDatatable.vue'
+import Timeline from '@/components/Timeline.vue'
+import axios from 'axios'
 
 export default {
   components: {
@@ -104,12 +106,21 @@ export default {
     DashboardCardSalesByCountries,
     DashboardWeeklyOverview,
     DashboardDatatable,
+    Timeline,
   },
   beforeMount() {
     if (!localStorage.getItem('token')) {
       localStorage.clear()
       this.$router.push('/login')
     }
+    axios
+      .get('/users/permissions')
+      .then(res => {
+        console.log(res.data.response)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   },
   data() {
     return {
