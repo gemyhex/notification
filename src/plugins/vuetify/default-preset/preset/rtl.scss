@@ -8,5 +8,123 @@
         right: unset;
       }
     }
+    .arrow {
+      &:before {
+        content: '';
+        left: -30% !important;
+        transform: translate(-30%, -50%);
+        -webkit-transform: translate(-30%, -50%);
+        -moz-transform: translate(-30%, -50%);
+        -ms-transform: translate(-30%, -50%);
+        -o-transform: translate(-30%, -50%);
+      }
+      &:after {
+        left: -17px;
+        border-right: 17px solid transparent;
+      }
+      &.step1:after {
+        border-right: 17px solid #ff390c;
+      }
+
+      &.step2:after {
+        border-right: 17px solid #ff8000;
+      }
+      &.step3:after {
+        border-right: 17px solid #00cc60;
+      }
+      &.step4:after {
+        border-right: 17px solid #8d45b5;
+      }
+      &.step5:after {
+        border-right: 17px solid #0682ff;
+      }
+    }
+    .arr-wrap-sm {
+      .content {
+        .sep {
+          order: 2;
+        }
+      }
+    }
+    .arrow-sm {
+      &:after {
+        left: -17px;
+        // border-right: 17px solid transparent;
+      }
+      &.step1:after {
+        right: -17px;
+        border-left: 17px solid #ff390c;
+      }
+      &.step2:after {
+        border-right: 17px solid #ff8000;
+      }
+      &.step3:after {
+        right: -17px;
+        border-left: 17px solid #00cc60;
+      }
+      &.step4:after {
+        border-right: 17px solid #8d45b5;
+      }
+      &.step5:after {
+        right: -17px;
+        border-left: 17px solid #0682ff;
+      }
+    }
+  }
+  &.v-application--is-ltr {
+    .arrow {
+      &:before {
+        content: '';
+        right: -50%;
+        transform: translate(-50%, -50%);
+        -webkit-transform: translate(-50%, -50%);
+        -moz-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        -o-transform: translate(-50%, -50%);
+      }
+      &:after {
+        right: -17px;
+        border-left: 17px solid transparent;
+      }
+      &.step1:after {
+        border-left: 17px solid #ff390c;
+      }
+
+      &.step2:after {
+        border-left: 17px solid #ff8000;
+      }
+      &.step3:after {
+        border-left: 17px solid #00cc60;
+      }
+      &.step4:after {
+        border-left: 17px solid #8d45b5;
+      }
+      &.step5:after {
+        border-left: 17px solid #0682ff;
+      }
+    }
+    .arrow-sm {
+      &:after {
+        right: -17px;
+        // border-left: 17px solid transparent;
+      }
+      &.step1:after {
+        border-left: 17px solid #ff390c;
+      }
+      &.step2:after {
+        left: -17px;
+        border-right: 17px solid #ff8000;
+      }
+      &.step3:after {
+        border-left: 17px solid #00cc60;
+      }
+      &.step4:after {
+        left: -17px;
+        border-right: 17px solid #8d45b5;
+      }
+      &.step5:after {
+        border-left: 17px solid #0682ff;
+      }
+    }
   }
 }

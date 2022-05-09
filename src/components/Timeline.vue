@@ -206,7 +206,6 @@ export default {}
   align-items: center;
   position: relative;
   .divid {
-    
     width: 1px;
     min-height: 1100px;
     background: transparent;
@@ -626,10 +625,8 @@ export default {}
   content: '';
   position: absolute;
   top: 50%;
-  right: -50%;
   width: 55px;
   height: 3px;
-  transform: translate(-50%, -50%);
 }
 .arrow.step5:before {
   display: none;
@@ -650,11 +647,10 @@ export default {}
 .arrow:after {
   border-top: 22px solid transparent;
   border-bottom: 22px solid transparent;
-  border-left: 17px solid transparent;
+
   content: '';
   height: 0;
   position: absolute;
-  right: -17px;
   top: 0;
   width: 0;
   z-index: 2;
@@ -662,11 +658,10 @@ export default {}
 .arrow-sm:after {
   border-top: 22px solid transparent;
   border-bottom: 22px solid transparent;
-  border-left: 17px solid transparent;
+
   content: '';
   height: 0;
   position: absolute;
-  right: -17px;
   top: 0;
   width: 0;
   z-index: 2;
@@ -700,40 +695,6 @@ export default {}
 }
 
 /* Colour the wedge to match it's associated box */
-.arrow.step1:after {
-  border-left: 17px solid #ff390c;
-}
-
-.arrow.step2:after {
-  border-left: 17px solid #ff8000;
-}
-.arrow.step3:after {
-  border-left: 17px solid #00cc60;
-}
-.arrow.step4:after {
-  border-left: 17px solid #8d45b5;
-}
-.arrow.step5:after {
-  border-left: 17px solid #0682ff;
-}
-
-.arrow-sm.step1:after {
-  border-left: 17px solid #ff390c;
-}
-.arrow-sm.step2:after {
-  border-right: 17px solid #ff8000;
-  left: -34px;
-}
-.arrow-sm.step3:after {
-  border-left: 17px solid #00cc60;
-}
-.arrow-sm.step4:after {
-  border-right: 17px solid #8d45b5;
-  left: -34px;
-}
-.arrow-sm.step5:after {
-  border-left: 17px solid #0682ff;
-}
 
 /* Typography */
 .arrow span {
