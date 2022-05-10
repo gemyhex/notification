@@ -75,7 +75,7 @@
       <nav-menu-link
         :title="$t('Employee_Documents')"
         v-show="permissions.includes('get-notification') || permissions.includes('administrator')"
-        :to="{ name: 'employeedocuments' }"
+        :to="{ name: 'Timeline' }"
         :icon="icons.mdiFolderAccountOutline"
       ></nav-menu-link>
       <nav-menu-link :title="$t('Roles')" :to="{ name: 'roles' }" :icon="icons.mdiFolderAccountOutline"></nav-menu-link>

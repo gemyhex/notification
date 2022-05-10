@@ -169,6 +169,22 @@ const routes = [{
     },
   },
   {
+    path: '/timeline',
+    name: 'Timeline',
+    component: () => import('@/views/pages/Timeline.vue'),
+    beforeEnter: (to, from, next) => {
+      const user = store.state.user
+      // const token = localStorage.getItem('token') || ''
+      if (user !== null) {
+        next()
+      } else {
+        next({
+          name: 'login',
+        })
+      }
+    },
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('@/views/pages/Login.vue'),

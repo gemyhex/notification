@@ -15,15 +15,21 @@ import Vuelidate from 'vuelidate'
 import vuetify from './plugins/vuetify'
 import App from './App.vue'
 import i18n from './i18n'
+import moment from 'moment'
 
 const lang = localStorage.getItem('lang') || 'en'
-// axios.defaults.baseURL = 'http://localhost/notification/public/api/'
-axios.defaults.baseURL = 'https://notif-back.smarttechno.co/api/'
+axios.defaults.baseURL = 'http://localhost/notification/public/api/'
+// axios.defaults.baseURL = 'https://notif-back.smarttechno.co/api/'
 axios.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem('token')}`
 axios.defaults.headers['Accept-Language'] = lang
 document.documentElement.lang = lang
 
 Vue.config.productionTip = false
+Vue.filter('formatDate', function (value) {
+  if (value) {
+    return moment(String(value)).format('MM/DD/YYYY')
+  }
+});
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(Vuelidate)

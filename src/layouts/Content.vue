@@ -23,7 +23,7 @@
           <v-spacer></v-spacer>
 
           <!-- Right Content -->
- 
+
           <theme-switcher></theme-switcher>
           <!-- <v-btn
             icon

@@ -506,11 +506,12 @@ export default {
       let self = this
       const { page, itemsPerPage } = this.options
       axios
-        .get('/employees/get/notifications', { params: { page: page, per_page: itemsPerPage } })
+        .get('employees/get/notifications', { params: { page: page, per_page: itemsPerPage } })
         .then(res => {
           self.items = res.data.response.data
           self.total = res.data.response.meta.total
           self.loading = false
+          console.log('notif', res.data.response);
         })
         .catch(error => {
           if (error.response.data.errors) {
