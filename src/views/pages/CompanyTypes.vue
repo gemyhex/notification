@@ -46,6 +46,29 @@
                             {{ $t('auths.type') }}
                           </div>
                         </v-col>
+                        <v-col cols="12">
+                          <label id="lbl_inp" for="types"
+                            >{{ $t('forms.logo') }} <span class="text-danger">*</span></label
+                          >
+                          <div class="wrapper-upload">
+                            <div class="file-upload">
+                              <input ref="file" type="file" @change="onSelectImage" />
+                              <img
+                                v-if="previewImage !== null"
+                                min-width="120px"
+                                min-height="120px"
+                                :src="previewImage === null ? require('@/assets/images/avatars/1.png') : previewImage"
+                              />
+                              <img
+                                :src="require('@/assets/images/avatars/1.png')"
+                                width="120px"
+                                height="120px"
+                                v-else
+                              />
+                            </div>
+                          </div>
+                          <div v-if="!$v.company.logo.required" class="invalid-feedback">{{ $t('auths.logo') }}.</div>
+                        </v-col>
                       </v-row>
                     </v-form>
                   </v-container>
@@ -374,22 +397,15 @@ export default {
         mdiPencil,
         mdiDelete,
       },
+      previewImage: null,
       company: {
         type: null,
+        logo: null,
       },
       total: 0,
       items: [],
       loading: true,
       options: {},
-      hCompTypes: [
-        {
-          text: 'ID',
-          align: 'start',
-          value: 'id',
-        },
-        { text: 'Type', value: 'type' },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
     }
   },
   watch: {
@@ -432,6 +448,19 @@ export default {
           this.isError = true
           this.errorDialog = true
         })
+    },
+    onSelectImage() {
+      this.company.logo = this.$refs.file.files[0]
+      const input = this.$refs.file
+      const file = input.files
+      if (file && file[0]) {
+        const reader = new FileReader()
+        reader.onload = e => {
+          this.previewImage = e.target.result
+        }
+        reader.readAsDataURL(file[0])
+        this.$emit('input', file[0])
+      }
     },
     editItem(item) {
       this.editedIndex = item.id
@@ -500,9 +529,24 @@ export default {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.isLoading = true
+        const frmDt = new FormData()
+        const getFormData = object =>
+          Object.entries(object).reduce((fd, [key, val]) => {
+            if (Array.isArray(val)) {
+              val.forEach((v, i) => {
+                for (let vv in v) {
+                  fd.append(`${key}[${i}][${vv}]`, v[vv])
+                }
+              })
+            } else {
+              fd.append(key, val)
+            }
+            return fd
+          }, frmDt)
         await axios
-          .post('/company-types/store', this.company)
+          .post('/company-types/store', getFormData(this.company))
           .then(res => {
+            console.log(res)
             this.getDataFromApi()
             this.close()
             this.isLoading = false
@@ -512,7 +556,7 @@ export default {
             if (error.response.data.errors) {
               this.errorsLog = error.response.data.errors
             } else {
-              this.errorsLog = { err: [this.$t('errs.crud.save', { comp: 'Company Type' })] }
+              this.errorsLog = { err: [this.$t('errs.crud.save', { com: 'Company' })] }
             }
             this.errorDialog = true
             this.isLoading = false
@@ -550,7 +594,51 @@ export default {
       type: {
         required,
       },
+      logo: {
+        required,
+      },
     },
   },
 }
 </script>
+<style lang="scss">
+.wrapper-upload {
+  width: 100%;
+  height: 100%;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  .file-upload {
+    height: 100px;
+    border-radius: 100px;
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    transition: all 1s;
+
+    input[type='file'] {
+      height: 80px;
+      width: 80px;
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      right: 0;
+      opacity: 0;
+      border-radius: 50%;
+    }
+    img {
+      width: 80px;
+      height: 80px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    &:hover {
+      background-position: 0 -100%;
+      color: #2590eb;
+    }
+  }
+}
+</style>

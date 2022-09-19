@@ -29,15 +29,38 @@
                   <v-container>
                     <v-form @submit.prevent="onSend" ref="form">
                       <v-row>
+                        <v-col cols="12">
+                          <label id="lbl_inp" for="types"
+                            >{{ $t('forms.logo') }} <span class="text-danger">*</span></label
+                          >
+                          <div class="wrapper-upload">
+                            <div class="file-upload">
+                              <input ref="file" type="file" @change="onSelectImage" />
+                              <img
+                                v-if="previewImage !== null"
+                                min-width="120px"
+                                min-height="120px"
+                                :src="previewImage === null ? require('@/assets/images/avatars/1.png') : previewImage"
+                              />
+                              <img
+                                :src="require('@/assets/images/avatars/1.png')"
+                                width="120px"
+                                height="120px"
+                                v-else
+                              />
+                            </div>
+                          </div>
+                          <div v-if="!$v.company.logo.required" class="invalid-feedback">{{ $t('auths.logo') }}.</div>
+                        </v-col>
                         <v-col cols="12" md="6">
                           <label id="lbl_inp" for="types"
                             >{{ $t('forms.comp_type') }} <span class="text-danger">*</span></label
                           >
                           <select
                             id="types"
-                            v-model="$v.company.company_type_id.$model"
+                            v-model="$v.company.type.$model"
                             :class="{
-                              'is-invalid': validateStatus($v.company.company_type_id),
+                              'is-invalid': validateStatus($v.company.type),
                               'form-select mt-3': true,
                             }"
                           >
@@ -46,7 +69,7 @@
                               {{ type.type }}
                             </option>
                           </select>
-                          <div v-if="!$v.company.company_type_id.required" class="invalid-feedback">
+                          <div v-if="!$v.company.type.required" class="invalid-feedback">
                             {{ $t('auths.type') }}
                           </div>
                         </v-col>
@@ -65,6 +88,23 @@
                           ></v-text-field>
                           <div v-if="!$v.company.name.required" class="invalid-feedback">
                             {{ $t('auths.fullname') }}
+                          </div>
+                        </v-col>
+                        <v-col cols="12">
+                          <label id="lbl_inp" for="types"
+                            >{{ $t('forms.comp_description') }} <span class="text-danger">*</span></label
+                          >
+                          <v-textarea
+                            id="company_description"
+                            v-model.trim="$v.company.description.$model"
+                            outlined
+                            dense
+                            :placeholder="$t('forms.comp_description')"
+                            hide-details
+                            :class="{ 'is-invalid': validateStatus($v.company.description), 'mt-3': true }"
+                          ></v-textarea>
+                          <div v-if="!$v.company.description.required" class="invalid-feedback">
+                            {{ $t('auths.description') }}
                           </div>
                         </v-col>
                       </v-row>
@@ -395,10 +435,12 @@ export default {
         mdiPencil,
         mdiDelete,
       },
+      previewImage: null,
       company: {
         name: null,
-        // client_id: null,
-        company_type_id: null,
+        description: null,
+        type: null,
+        logo: null,
       },
       clients: null,
       types: null,
@@ -406,17 +448,6 @@ export default {
       items: [],
       loading: true,
       options: {},
-      hCompanies: [
-        {
-          text: 'Id',
-          align: 'start',
-          sortable: false,
-          value: 'id',
-        },
-        { text: 'Name', value: 'name' },
-        { text: 'Type', value: 'company_type.type' },
-        { text: 'Actions', value: 'actions', sortable: false },
-      ],
     }
   },
   mounted() {
@@ -555,9 +586,24 @@ export default {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.isLoading = true
+        const frmDt = new FormData()
+        const getFormData = object =>
+          Object.entries(object).reduce((fd, [key, val]) => {
+            if (Array.isArray(val)) {
+              val.forEach((v, i) => {
+                for (let vv in v) {
+                  fd.append(`${key}[${i}][${vv}]`, v[vv])
+                }
+              })
+            } else {
+              fd.append(key, val)
+            }
+            return fd
+          }, frmDt)
         await axios
-          .post('/companies/store', this.company)
+          .post('/companies/store', getFormData(this.company))
           .then(res => {
+            console.log(res)
             this.getDataFromApi()
             this.close()
             this.isLoading = false
@@ -601,12 +647,68 @@ export default {
           })
       }
     },
+    onSelectImage() {
+      this.company.logo = this.$refs.file.files[0]
+      const input = this.$refs.file
+      const file = input.files
+      if (file && file[0]) {
+        const reader = new FileReader()
+        reader.onload = e => {
+          this.previewImage = e.target.result
+        }
+        reader.readAsDataURL(file[0])
+        this.$emit('input', file[0])
+      }
+    },
   },
   validations: {
     company: {
       name: { required },
-      company_type_id: { required },
+      type: { required },
+      description: { required },
+      logo: { required },
     },
   },
 }
 </script>
+<style lang="scss">
+.wrapper-upload {
+  width: 100%;
+  height: 100%;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  .file-upload {
+    height: 100px;
+    border-radius: 100px;
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    transition: all 1s;
+
+    input[type='file'] {
+      height: 80px;
+      width: 80px;
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      right: 0;
+      opacity: 0;
+      border-radius: 50%;
+    }
+    img {
+      width: 80px;
+      height: 80px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    &:hover {
+      background-position: 0 -100%;
+      color: #2590eb;
+    }
+  }
+}
+</style>

@@ -41,7 +41,7 @@
                               'form-select mt-3': true,
                             }"
                           >
-                            <option disabled selected>{{ $t('forms.sdoc_name') }}</option>
+                            <option disabled selected>{{ $t('forms.sdoc_grp') }}</option>
                             <option v-for="group in groups" :key="group.id" :value="group.id">
                               {{ group.name }}
                             </option>

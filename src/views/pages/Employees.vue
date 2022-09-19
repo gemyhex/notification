@@ -401,26 +401,6 @@ export default {
         company_id: null,
       },
       companies: null,
-      hEmployyes: [
-        {
-          text: 'ID',
-          align: 'start',
-          value: 'id',
-        },
-        {
-          text: 'Name',
-          value: 'name',
-        },
-        {
-          text: 'Company',
-          value: 'company.name',
-        },
-        {
-          text: 'Actions',
-          value: 'actions',
-          sortable: false,
-        },
-      ],
     }
   },
   watch: {
@@ -465,6 +445,7 @@ export default {
       axios
         .get('/employees', { params: { page: page, per_page: itemsPerPage } })
         .then(res => {
+          console.log(res)
           self.items = res.data.response.data
           self.total = res.data.response.meta.total
           self.loading = false
